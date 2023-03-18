@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">WetharPresnter</string>
+    <string name="location">Chose Location From Map</string>
+    <string name="location_from">Location From</string>
+    <string name="setting">Setting</string>
+    <string name="units_of_temperature">Unit of temperature</string>
+    <string name="units_of_wind_speed">Unit of wind speed</string>
+    <string name="language">language</string>
+    <string name="arabic">arabic</string>
+    <string name="english">english</string>
+    <string name="save">save</string>
 </resources>
