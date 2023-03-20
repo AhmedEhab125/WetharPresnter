@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundColor"
-    tools:context=".SettingScreen">
+    tools:context=".SettingScreen.SettingScreen">
 
     <TextView
         android:id="@+id/textView4"
@@ -172,11 +172,9 @@
         android:layout_gravity="center"
         app:cardBackgroundColor="#152c39"
         app:cardCornerRadius="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/units_of_wind"
         app:layout_constraintStart_toStartOf="@+id/units_of_wind"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.605">
+        app:layout_constraintTop_toTopOf="@+id/units_of_temperature">
 
         <RadioGroup
             android:layout_width="wrap_content"

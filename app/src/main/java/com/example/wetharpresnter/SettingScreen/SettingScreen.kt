@@ -1,7 +1,8 @@
-package com.example.wetharpresnter
+package com.example.wetharpresnter.SettingScreen
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.wetharpresnter.R
 
 class SettingScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
