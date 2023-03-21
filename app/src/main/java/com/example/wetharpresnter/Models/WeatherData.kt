@@ -1,19 +1,16 @@
 package com.example.wetharpresnter.Models
 
 data class WeatherData(
+    var lat: Double? = null,
+    var lon: Double? = null,
+    var timezone: String? = null,
+    var timezoneOffset: Int? = null,
+    var current: Current? = Current(),
+    var minutely: ArrayList<Minutely> = arrayListOf(),
+    var hourly: ArrayList<Hourly> = arrayListOf(),
+    var daily: ArrayList<Daily> = arrayListOf(),
+    var alerts: ArrayList<Alerts> = arrayListOf()
 
-    var coord: Coord? = Coord(),
-    var weather: ArrayList<Weather> = arrayListOf(),
-    var base: String? = null,
-    var main: Main? = Main(),
-    var visibility: Int? = null,
-    var wind: Wind? = Wind(),
-    var clouds: Clouds? = Clouds(),
-    var dt: Int? = null,
-    var sys: Sys? = Sys(),
-    var timezone: Int? = null,
-    var id: Int? = null,
-    var name: String? = null,
-    var cod: Int? = null
+)
 
-) 
+
