@@ -11,30 +11,32 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
         android:fontFamily="casual"
         android:text="@string/setting"
         android:textColor="#f4fdfd"
         android:textSize="60sp"
         android:textStyle="bold|italic"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/cvLocation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.109" />
+        app:layout_constraintVertical_bias="0.593" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvLocation"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginBottom="15dp"
         app:cardBackgroundColor="#152c39"
         app:cardCornerRadius="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/units_of_temperature"
         app:layout_constraintEnd_toEndOf="@+id/units_of_temperature"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/units_of_temperature"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.305">
+        app:layout_constraintVertical_bias="1.0">
 
         <RadioGroup
             android:layout_width="wrap_content"
@@ -72,13 +74,14 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginEnd="30dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="15dp"
         app:cardBackgroundColor="#152c39"
         app:cardCornerRadius="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/cv_language"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.305">
+        app:layout_constraintTop_toTopOf="@+id/cvLocation"
+        app:layout_constraintVertical_bias="0.923">
 
         <RadioGroup
             android:layout_width="wrap_content"

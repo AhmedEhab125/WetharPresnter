@@ -8,10 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.example.wetharpresnter.Models.WetharData
+import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.databinding.FragmentHomeBinding
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
@@ -25,7 +24,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class HomeFragment : Fragment() {
-    lateinit var wetharData: WetharData
+    lateinit var weatherData: WeatherData
     lateinit var binding: FragmentHomeBinding
 
 
@@ -45,16 +44,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch(Dispatchers.IO) {
-            var a =""
-            launch {
-                wetharData= Repository.getWetharData("33.44","-94.04")?: WetharData()
-                Log.i("ahmed", a)
-            }.join()
-            launch(Dispatchers.Main) { binding.tvCityName.text=wetharData.sys?.country
-            binding.tvTempreture.text=wetharData.main?.temp.toString()
-                binding.tvWetharState.text=wetharData.weather.get(0).main
 
-                var uri ="https://openweathermap.org/img/wn/${wetharData.weather.get(0).icon}@2x.png"
+            launch {
+                weatherData= Repository.getWetharData("33.44","-94.04")?: WeatherData()
+
+            }.join()
+            launch(Dispatchers.Main) { binding.tvCityName.text=weatherData.sys?.country
+            binding.tvTempreture.text=weatherData.main?.temp.toString()
+                binding.tvWetharState.text=weatherData.weather.get(0).main
+
+                var uri ="https://openweathermap.org/img/wn/${weatherData.weather.get(0).icon}@2x.png"
 
                 Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
             }

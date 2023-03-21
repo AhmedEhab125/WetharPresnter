@@ -1,6 +1,6 @@
 package com.example.wetharpresnter.Models
 
-data class WetharData(
+data class WeatherData(
 
     var coord: Coord? = Coord(),
     var weather: ArrayList<Weather> = arrayListOf(),
