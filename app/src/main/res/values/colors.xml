@@ -8,7 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="backgroundColor">#081b24</color>
-
+    <color name="city_Color">#afb5bb</color>
 
 
 </resources>
