@@ -1,4 +1,4 @@
-package com.example.wetharpresnter
+package com.example.wetharpresnter.View.MainActivity
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

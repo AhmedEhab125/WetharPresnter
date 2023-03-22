@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.wetharpresnter.Models.Hourly
 import com.example.wetharpresnter.databinding.WeatherByHourIteamBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HoursWeatherDataAdapter(var list: List<Hourly>) :
     RecyclerView.Adapter<HoursWeatherDataAdapter.ViewHolder>() {
@@ -22,7 +24,16 @@ class HoursWeatherDataAdapter(var list: List<Hourly>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.binding.tvTime.text=position.toString()
+
+        var date = Date(list.get(position).dt?.times(1000L) ?: 0)
+        var sdf= SimpleDateFormat("hh:mm a")
+        sdf.timeZone = TimeZone.getDefault()
+        var formatedData=sdf.format(date)
+
+
+
+
+        holder.binding.tvTime.text=formatedData.toString()
         holder.binding.tvHourTemp.text=list.get(position).temp.toString()
         var uri ="https://openweathermap.org/img/wn/${list.get(position).weather.get(0).icon}@2x.png"
         Glide.with(binding.root).load(uri).into(binding.ivHourWeatherState)

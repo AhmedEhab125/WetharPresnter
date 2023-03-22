@@ -1,10 +1,9 @@
-package com.example.wetharpresnter.SettingScreen
+package com.example.wetharpresnter.View.SettingScreen
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.wetharpresnter.MainActivity
-import com.example.wetharpresnter.R
+import com.example.wetharpresnter.View.MainActivity.MainActivity
 import com.example.wetharpresnter.databinding.ActivitySettingScreenBinding
 
 class SettingScreen : AppCompatActivity() {

@@ -13,13 +13,13 @@
         android:theme="@style/Theme.WetharPresnter"
         tools:targetApi="31" >
         <activity
-            android:name=".MainActivity"
+            android:name=".View.MainActivity.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".SettingScreen.SettingScreen"
+            android:name=".View.SettingScreen.SettingScreen"
             android:exported="false" />
         <activity
-            android:name=".SplashScreen.SplashScreen"
+            android:name=".View.SplashScreen.SplashScreen"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

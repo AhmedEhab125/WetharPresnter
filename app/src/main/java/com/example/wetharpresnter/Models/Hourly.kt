@@ -3,7 +3,7 @@ package com.example.wetharpresnter.Models
 
 data class Hourly(
 
-    var dt: Double? = null,
+    var dt: Int? = null,
     var temp: Double? = null,
     var feelsLike: Double? = null,
     var pressure: Double? = null,
