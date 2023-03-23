@@ -34,7 +34,7 @@ class HoursWeatherDataAdapter(var list: List<Hourly>) :
 
 
         holder.binding.tvTime.text=formatedData.toString()
-        holder.binding.tvHourTemp.text=list.get(position).temp.toString()
+        holder.binding.tvHourTemp.text=Math.ceil(list.get(position).temp?:0.0).toInt().toString()+"°C"
         var uri ="https://openweathermap.org/img/wn/${list.get(position).weather.get(0).icon}@2x.png"
         Glide.with(binding.root).load(uri).into(binding.ivHourWeatherState)
     }

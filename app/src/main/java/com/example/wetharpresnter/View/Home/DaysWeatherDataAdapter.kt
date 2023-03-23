@@ -29,7 +29,6 @@ class DaysWeatherDataAdapter(var list: List<Daily>) :
 
         var simpleDate = SimpleDateFormat("dd-M-yyyy")
         var currentDate = simpleDate.format(list.get(position).dt?.times(1000) ?: 0)
-        println(currentDate)
 
         var date: Date = simpleDate.parse(currentDate)
         Log.i("TAG", currentDate)
@@ -39,8 +38,9 @@ class DaysWeatherDataAdapter(var list: List<Daily>) :
         holder.binding.tvDiscription.text = list.get(position).weather.get(0).description
 
         holder.binding.tvDay.text = goal
-        holder.binding.tvMaxTemp.text = list.get(position).temp?.max.toString()
-        holder.binding.tvMinTemp.text = list.get(position).temp?.min.toString()
+        var maxTemp =Math.ceil(list.get(position).temp?.max ?: 0.0).toInt()
+        var minTemp =Math.ceil(list.get(position).temp?.min ?: 0.0).toInt()
+        holder.binding.tvMinTemp.text = maxTemp.toString()+"/"+minTemp+"°C"
         var uri =
             "https://openweathermap.org/img/wn/${list.get(position).weather.get(0).icon}@2x.png"
         Glide.with(binding.root).load(uri).into(binding.ivDayState)

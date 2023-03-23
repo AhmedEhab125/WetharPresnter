@@ -9,6 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="backgroundColor">#081b24</color>
     <color name="city_Color">#afb5bb</color>
-
+    <color name="card_Color">#132933</color>
 
 </resources>

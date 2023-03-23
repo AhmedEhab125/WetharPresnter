@@ -1,24 +1,21 @@
 package com.example.wetharpresnter.View.Home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
-import com.example.wetharpresnter.Models.WeatherData
-import com.example.wetharpresnter.Netwoek.Repo.Repository
 import com.example.wetharpresnter.ViewModel.HomeViewModel
+import com.example.wetharpresnter.ViewModel.ViewModelFactory
 import com.example.wetharpresnter.databinding.FragmentHomeBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 /**
@@ -42,24 +39,33 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getAndSetWeatherData("30.033333", "31.233334")
+        getAndSetWeatherData()
 
 
 
     }
-    fun getAndSetWeatherData(lat :String,lon :String){
-        var viewModelProvider  =ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
-        viewModelProvider.getWeatherDataFromApi(lat, lon)
+
+    override fun onResume() {
+        super.onResume()
+
+    }
+
+    fun getAndSetWeatherData(){
+        var viewModelFactory = ViewModelFactory(requireContext())
+        var viewModelProvider  =ViewModelProvider(requireActivity(),viewModelFactory).get(HomeViewModel::class.java)
+        viewModelProvider.getLocation()
         viewModelProvider.accessList.observe(requireActivity()){weatherData->
             binding.tvCityName.text = weatherData.timezone
-            binding.tvTempreture.text = weatherData.current?.temp.toString()
+            var temp =Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
+
+            binding.tvTempreture.text = temp.toString()+"°C"
             binding.tvWetharState.text = weatherData.current?.weather?.get(0)?.main
 
             var uri = "https://openweathermap.org/img/wn/${weatherData.current?.weather?.get(0)?.icon}@2x.png"
             Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
-            binding.tvHumidity.text = weatherData.current?.humidity.toString()
-            binding.tvPressure.text = weatherData.current?.pressure.toString()
-            binding.tvWindSpeed.text = weatherData.current?.windSpeed.toString()
+            binding.tvHumidity.text = Math.ceil(weatherData.current?.humidity?:0.0).toInt().toString()
+            binding.tvPressure.text = Math.ceil(weatherData.current?.pressure?:0.0).toInt().toString()
+            binding.tvWindSpeed.text = Math.ceil(weatherData.current?.windSpeed?:0.0).toInt().toString()
             binding.rvHoursWeather.apply {
                 adapter = HoursWeatherDataAdapter(weatherData.hourly)
                 layoutManager =
@@ -102,6 +108,11 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment() {
             override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
             override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
         })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i("Stoped", "onPause: ")
     }
 
 }

@@ -1,4 +1,4 @@
-package com.example.wetharpresnter.Netwoek.Repo
+package com.example.wetharpresnter.Repo
 
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.WeatherService
