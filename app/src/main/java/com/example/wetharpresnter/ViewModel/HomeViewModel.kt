@@ -15,18 +15,18 @@ import kotlinx.coroutines.launch
 class HomeViewModel(private var context: Context) :ViewModel() {
     private var list : MutableLiveData<WeatherData> = MutableLiveData<WeatherData>()
     var accessList : LiveData<WeatherData> = list
-   private fun getWeatherDataFromApi(lat :String,lon :String) {
+    fun getWeatherDataFromApi(lat :String,lon :String) {
         viewModelScope.launch(Dispatchers.IO) {
             list.postValue(Repository.getWetharData(lat, lon))
         }
 
     }
     fun getLocation(){
-
         var gpsLocation = GPSLocation(context)
         gpsLocation.getLastLocation()
         gpsLocation.mutable.observe(context as LifecycleOwner ){
             getWeatherDataFromApi(it.second,it.first)
+
         }
     }
 

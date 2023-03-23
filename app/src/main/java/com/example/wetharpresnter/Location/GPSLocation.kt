@@ -96,9 +96,14 @@ class GPSLocation (var context: Context) {
             mutable.postValue(Pair(mylastLocaction.longitude.toString(),mylastLocaction.latitude.toString()))
             var geocoder = Geocoder(context)
             var list : List<Address> = geocoder.getFromLocation(mylastLocaction.latitude,mylastLocaction.longitude,1) as List<Address>
-
+        stopSearch()
         }
 
+    }
+
+    private fun stopSearch() {
+
+        mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback)
     }
 
 }

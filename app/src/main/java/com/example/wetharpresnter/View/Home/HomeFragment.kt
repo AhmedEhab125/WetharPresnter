@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,6 +26,8 @@ import com.example.wetharpresnter.databinding.FragmentHomeBinding
  */
 class HomeFragment(var viewPager: ViewPager2) : Fragment() {
     lateinit var binding: FragmentHomeBinding
+    var observeOnce = false
+
 
 
     override fun onCreateView(
@@ -47,14 +50,18 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        getAndSetWeatherData()
+
 
     }
 
     fun getAndSetWeatherData(){
+
         var viewModelFactory = ViewModelFactory(requireContext())
         var viewModelProvider  =ViewModelProvider(requireActivity(),viewModelFactory).get(HomeViewModel::class.java)
         viewModelProvider.getLocation()
-        viewModelProvider.accessList.observe(requireActivity()){weatherData->
+        viewModelProvider.accessList.observe(requireActivity()){ weatherData->
+
             binding.tvCityName.text = weatherData.timezone
             var temp =Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
 
@@ -63,19 +70,23 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment() {
 
             var uri = "https://openweathermap.org/img/wn/${weatherData.current?.weather?.get(0)?.icon}@2x.png"
             Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
-            binding.tvHumidity.text = Math.ceil(weatherData.current?.humidity?:0.0).toInt().toString()
-            binding.tvPressure.text = Math.ceil(weatherData.current?.pressure?:0.0).toInt().toString()
-            binding.tvWindSpeed.text = Math.ceil(weatherData.current?.windSpeed?:0.0).toInt().toString()
+            binding.tvHumidity.text = Math.ceil((weatherData.current?.humidity)?.toDouble() ?: 0.0).toInt().toString()
+            binding.tvPressure.text = Math.ceil((weatherData.current?.pressure)?.toDouble() ?: 0.0).toInt().toString()
+            binding.tvWindSpeed.text = Math.ceil(weatherData.current?.wind_speed?:5.0).toInt().toString()
+
             binding.rvHoursWeather.apply {
                 adapter = HoursWeatherDataAdapter(weatherData.hourly)
                 layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
             }
+
             binding.rvDayWeather.apply {
                 adapter=DaysWeatherDataAdapter(weatherData.daily)
                 layoutManager=LinearLayoutManager(requireContext())
             }
+
+
         }
 
         handelViewPagerWithRecycleView()
