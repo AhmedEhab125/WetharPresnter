@@ -1,21 +1,21 @@
 package com.example.wetharpresnter.Models
 
 data class Current(
-
-    var dt: Double? = null,
-    var sunrise: Double? = null,
-    var sunset: Double? = null,
-    var temp: Double? = null,
-    var feelsLike: Double? = null,
-    var pressure: Double? = null,
-    var humidity: Double? = null,
-    var dewPoint: Double? = null,
-    var uvi: Double? = null,
-    var clouds: Double? = null,
-    var visibility: Double? = null,
-    var windSpeed: Double? = null,
-    var windDeg: Double? = null,
-    var windGust: Double? = null,
-    var weather: ArrayList<Weather> = arrayListOf()
-
+    val clouds: Int,//need
+    val dew_point: Double,
+    val dt: Int,//need
+    val feels_like: Double,
+    val humidity: Int,//need
+    val pressure: Int,//need
+    val rain: Rain,
+    val sunrise: Int,
+    val sunset: Int,
+    val temp: Double,//need
+    val uvi: Double,
+    val visibility: Int,
+    val weather: List<Weather>,
+    val wind_deg: Int,
+    val wind_speed: Double//need
 )
+
+

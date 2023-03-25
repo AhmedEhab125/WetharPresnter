@@ -5,7 +5,7 @@ data class WeatherData(
     var lon: Double? = null,
     var timezone: String? = null,
     var timezoneOffset: Int? = null,
-    var current: Current? = Current(),
+    var current: Current,
     var minutely: ArrayList<Minutely> = arrayListOf(),
     var hourly: ArrayList<Hourly> = arrayListOf(),
     var daily: ArrayList<Daily> = arrayListOf(),

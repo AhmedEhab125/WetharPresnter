@@ -3,25 +3,25 @@ package com.example.wetharpresnter.Models
 
 data class Daily(
 
-    var dt: Double? = null,
-    var sunrise: Double? = null,
-    var sunset: Double? = null,
-    var moonrise: Double? = null,
-    var moonset: Double? = null,
-    var moonPhase: Double? = null,
-    var temp: Temp? = Temp(),
-    var feelsLike: FeelsLike? = FeelsLike(),
-    var pressure: Double? = null,
-    var humidity: Double? = null,
-    var dewPoint: Double? = null,
-    var windSpeed: Double? = null,
-    var windDeg: Double? = null,
-    var windGust: Double? = null,
-    var weather: ArrayList<Weather> = arrayListOf(),
-    var clouds: Double? = null,
-    var pop: Double? = null,
-    var rain: Double? = null,
-    var snow: Double? = null,
-    var uvi: Double? = null
+    val clouds: Int,//need
+    val dew_point: Double,
+    val dt: Int,
+    val feels_like: FeelsLike,
+    val humidity: Int,//need
+    val moon_phase: Double,
+    val moonrise: Int,
+    val moonset: Int,
+    val pop: Double,
+    val pressure: Int,//need
+    val rain: Double,
+    val snow: Double,
+    val sunrise: Int,
+    val sunset: Int,
+    val temp: Temp,//need
+    val uvi: Double,
+    val weather: List<Weather>,
+    val wind_deg: Int,
+    val wind_gust: Double,
+    val wind_speed: Double//need
 
 )

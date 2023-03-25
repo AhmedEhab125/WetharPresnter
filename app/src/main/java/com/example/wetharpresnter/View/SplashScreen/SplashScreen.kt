@@ -1,11 +1,9 @@
-package com.example.wetharpresnter.SplashScreen
+package com.example.wetharpresnter.View.SplashScreen
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.wetharpresnter.MainActivity
-import com.example.wetharpresnter.SettingScreen.SettingScreen
-import com.example.wetharpresnter.databinding.ActivityMainBinding
+import com.example.wetharpresnter.View.SettingScreen.SettingScreen
 import com.example.wetharpresnter.databinding.ActivitySplashScreenBinding
 
 class SplashScreen : AppCompatActivity() {

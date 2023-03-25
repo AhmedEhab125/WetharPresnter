@@ -2,20 +2,20 @@ package com.example.wetharpresnter.Models
 
 
 data class Hourly(
-
-    var dt: Double? = null,
-    var temp: Double? = null,
-    var feelsLike: Double? = null,
-    var pressure: Double? = null,
-    var humidity: Double? = null,
-    var dewPoint: Double? = null,
-    var uvi: Double? = null,
-    var clouds: Int? = null,
-    var visibility: Int? = null,
-    var windSpeed: Double? = null,
-    var windDeg: Double? = null,
-    var windGust: Double? = null,
-    var weather: ArrayList<Weather> = arrayListOf(),
-    var pop: Double? = null
-
+    val clouds: Int,
+    val dew_point: Double,
+    val dt: Int,//need
+    val feels_like: Double,
+    val humidity: Int,
+    val pop: Double,
+    val pressure: Int,
+    val rain: RainX,
+    val snow: Snow,
+    val temp: Double,//need
+    val uvi: Double,
+    val visibility: Int,
+    val weather: List<Weather>,
+    val wind_deg: Int,
+    val wind_gust: Double,
+    val wind_speed: Double
 )
