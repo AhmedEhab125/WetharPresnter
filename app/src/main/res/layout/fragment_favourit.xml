@@ -8,6 +8,16 @@
     tools:context=".View.Favourit.FavouritFragment">
 
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_favourit_locations"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/favourit_location_iteam" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_location"
         android:layout_width="wrap_content"

@@ -1,13 +1,21 @@
 package com.example.wetharpresnter.View.Favourit
 
 import android.app.Dialog
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Button
+import android.widget.SearchView
 import androidx.constraintlayout.widget.Constraints
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.R
+import com.example.wetharpresnter.ViewModel.HomeViewModel
+import com.example.wetharpresnter.ViewModel.ViewModelFactory
 import com.example.wetharpresnter.databinding.FragmentFavouritBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -29,6 +37,8 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
     lateinit var btnSaveLocation: Button
     var lat: Double? = null
     var lon: Double? = null
+    lateinit var viewModelFactory :ViewModelFactory
+    lateinit var viewModelProvider  :HomeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,10 +53,23 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModelFactory= ViewModelFactory(requireContext())
+        viewModelProvider  = ViewModelProvider(requireActivity(),viewModelFactory).get(HomeViewModel::class.java)
+          viewModelProvider.getFavLocations()
+
+        viewModelProvider.accessFavList.observe(requireActivity()){list->
+            binding.rvFavouritLocations.apply {
+                adapter=FavouritLocationAdapter(list as ArrayList<WeatherData>)
+                layoutManager=GridLayoutManager(requireContext(),2)
+            }
+        }
 
 
         binding.addLocation.setOnClickListener {
             showMap()
+            viewModelProvider.getFavLocations()
+            locationSearch()
+
         }
     }
 
@@ -60,14 +83,14 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
 
         var markerOption = MarkerOptions().position(selectedLocation).title("selected")
         var marker = googleMap.addMarker(markerOption)
-
         googleMap.setOnMapLongClickListener { lis ->
             var selectedLocation = LatLng(lis.latitude, lis.longitude)
             marker?.position = selectedLocation
             btnSaveLocation.setOnClickListener {
                 lat = lis.latitude
-                lon=lis.longitude
-                marker?.remove()
+                lon = lis.longitude
+                viewModelProvider.addToFav(lat.toString(),lon.toString())
+
                 dialog.dismiss()
             }
         }
@@ -89,12 +112,14 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
         btnSaveLocation = dialog.findViewById<Button>(R.id.btn_save_location)
 
         btnSaveLocation.setOnClickListener {
+            viewModelProvider.getFavLocations()
             dialog.dismiss()
         }
     }
 
     override fun onResume() {
         super.onResume()
+        viewModelProvider.getFavLocations()
         map.onResume()
     }
 
@@ -126,5 +151,39 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
     override fun onLowMemory() {
         super.onLowMemory()
         map.onLowMemory()
+    }
+
+    fun locationSearch() {
+        dialog.findViewById<SearchView>(R.id.sv_location_search).setOnQueryTextListener(object :
+            SearchView.OnQueryTextListener {
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                var geoCoder = Geocoder(requireContext())
+                var addressList = arrayListOf<Address>()
+                addressList = geoCoder.getFromLocationName(query,1) as ArrayList<Address>
+                if(addressList.size>0){
+                    var address =addressList.get(0)
+                    var area =address.adminArea
+                    var lat =address.latitude
+                    var long =address.longitude
+                    goToAddress(lat , long ,10f)
+
+                }
+                return false
+            }
+
+        })
+
+
+    }
+
+    private fun goToAddress(lat: Double, lon: Double, fl: Float) {
+        var latLang =LatLng(lat,lon)
+        var camera=CameraUpdateFactory.newLatLngZoom(latLang,fl)
+        map.getMapAsync { it.animateCamera(camera) }
     }
 }
