@@ -8,9 +8,12 @@ import androidx.constraintlayout.widget.Constraints
 import androidx.fragment.app.Fragment
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.databinding.FragmentFavouritBinding
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 
 /**
  * A simple [Fragment] subclass.
@@ -50,7 +53,10 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    override fun onMapReady(map: GoogleMap) {
+    override fun onMapReady(googleMap: GoogleMap) {
+        val sydney = LatLng(30.9, 60.99)
+        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
     fun dialogInit(savedInstanceState: Bundle?){
         dialog = Dialog(requireContext())
