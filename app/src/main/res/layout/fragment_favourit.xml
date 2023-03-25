@@ -8,14 +8,15 @@
     tools:context=".View.Favourit.FavouritFragment">
 
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_favourit_locations"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/favourit_location_iteam" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_location"

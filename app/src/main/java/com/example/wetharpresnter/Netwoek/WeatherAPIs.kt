@@ -12,7 +12,7 @@ interface WeatherAPIs {
         @Query("lat") lat: String,
         @Query("lon") lon: String,
         @Query("lang") lang: String,
-        @Query("appid") appId: String = "d6a347a6872fc132aad35e4ed9e1f138",
+        @Query("appid") appId: String = "079fa9942e78463cda08c0bbceceffd9",
         @Query("units") units: String = "metric"
 
         // Resources.getSystem().getString(R.string.API_KEY)
