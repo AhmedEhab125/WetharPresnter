@@ -1,5 +1,6 @@
 package com.example.wetharpresnter.View.Home
 
+import android.R
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,7 +8,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.example.wetharpresnter.ViewModel.HomeViewModel
 import com.example.wetharpresnter.ViewModel.ViewModelFactory
 import com.example.wetharpresnter.databinding.FragmentHomeBinding
+import com.facebook.shimmer.ShimmerFrameLayout
 
 
 /**
@@ -44,6 +45,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         getAndSetWeatherData()
 
+        binding.shimmerViewContainer.startShimmer() // If auto-start is set to false
 
 
     }
@@ -86,7 +88,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment() {
                 layoutManager=LinearLayoutManager(requireContext())
             }
 
-
+            binding.shimmerViewContainer.hideShimmer()
         }
 
         handelViewPagerWithRecycleView()

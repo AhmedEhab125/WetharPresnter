@@ -1,5 +1,7 @@
 package com.example.wetharpresnter.Models
 
+import androidx.room.Entity
+@Entity(tableName = "WeatherData")
 data class WeatherData(
     var lat: Double? = null,
     var lon: Double? = null,

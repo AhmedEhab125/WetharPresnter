@@ -2,6 +2,7 @@ package com.example.wetharpresnter.View.Favourit
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import androidx.constraintlayout.widget.Constraints
@@ -13,6 +14,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
 /**
@@ -24,6 +26,9 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
     lateinit var binding: FragmentFavouritBinding
     lateinit var dialog: Dialog
     lateinit var map: MapView
+    lateinit var btnSaveLocation: Button
+    var lat: Double? = null
+    var lon: Double? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,33 +46,49 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
 
 
         binding.addLocation.setOnClickListener {
-            showDeleteMealDialog()
+            showMap()
         }
     }
 
-    private fun showDeleteMealDialog() {
-
-
+    private fun showMap() {
         dialog.show()
-
 
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        val sydney = LatLng(30.9, 60.99)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        var selectedLocation = LatLng(63.0, 63.0)
+
+        var markerOption = MarkerOptions().position(selectedLocation).title("selected")
+        var marker = googleMap.addMarker(markerOption)
+
+        googleMap.setOnMapLongClickListener { lis ->
+            var selectedLocation = LatLng(lis.latitude, lis.longitude)
+            marker?.position = selectedLocation
+            btnSaveLocation.setOnClickListener {
+                lat = lis.latitude
+                lon=lis.longitude
+                marker?.remove()
+                dialog.dismiss()
+            }
+        }
     }
-    fun dialogInit(savedInstanceState: Bundle?){
+
+    fun dialogInit(savedInstanceState: Bundle?) {
         dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.map_picker)
+
         map = dialog.findViewById(R.id.mv_fav_locations)
         val window: Window? = dialog.getWindow()
-        window?.setLayout(Constraints.LayoutParams.MATCH_PARENT, Constraints.LayoutParams.MATCH_PARENT)
+        window?.setLayout(
+            Constraints.LayoutParams.MATCH_PARENT,
+            Constraints.LayoutParams.MATCH_PARENT
+        )
         map.getMapAsync(this)
         map.onCreate(savedInstanceState)
-        dialog.findViewById<Button>(R.id.btn_save_location).setOnClickListener {
+        btnSaveLocation = dialog.findViewById<Button>(R.id.btn_save_location)
+
+        btnSaveLocation.setOnClickListener {
             dialog.dismiss()
         }
     }
