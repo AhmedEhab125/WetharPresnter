@@ -70,10 +70,8 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
 
         }
 
-
         binding.addLocation.setOnClickListener {
             showMap()
-            viewModelProvider.getFavLocations()
             locationSearch()
 
         }
@@ -89,7 +87,6 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         var selectedLocation = LatLng(63.0, 63.0)
-
         var markerOption = MarkerOptions().position(selectedLocation).title("selected")
         var marker = googleMap.addMarker(markerOption)
         googleMap.setOnMapLongClickListener { lis ->
@@ -99,9 +96,10 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
             btnSaveLocation.setOnClickListener {
                 lat = lis.latitude
                 lon = lis.longitude
+
                 viewModelProvider.addToFav(lat.toString(), lon.toString())
-                viewModelProvider.getFavLocations()
                 dialog.dismiss()
+
 
             }
         }
@@ -124,6 +122,7 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
 
         btnSaveLocation.setOnClickListener {
             dialog.dismiss()
+
         }
     }
 
@@ -177,7 +176,6 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
                 addressList = geoCoder.getFromLocationName(query, 1) as ArrayList<Address>
                 if (addressList.size > 0) {
                     var address = addressList.get(0)
-                    var area = address.adminArea
                     var lat = address.latitude
                     var long = address.longitude
                     goToAddress(lat, long, 10f)

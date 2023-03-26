@@ -1,6 +1,7 @@
 package com.example.wetharpresnter.ViewModel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,43 +12,58 @@ import com.example.wetharpresnter.Location.GPSLocation
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Repo.Repository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private var context: Context) :ViewModel() {
-    private var list : MutableLiveData<WeatherData> = MutableLiveData<WeatherData>()
-    private var favList  = MutableLiveData<List<WeatherData>>()
-    var accessList : LiveData<WeatherData> = list
-    var accessFavList : LiveData<List<WeatherData>> = favList
-    fun getWeatherDataFromApi(lat :String,lon :String) {
+class HomeViewModel(private var context: Context) : ViewModel() {
+    private var list: MutableLiveData<WeatherData> = MutableLiveData<WeatherData>()
+    private var favList = MutableLiveData<List<WeatherData>>()
+    var accessList: LiveData<WeatherData> = list
+    var accessFavList: LiveData<List<WeatherData>> = favList
+    fun getWeatherDataFromApi(lat: String, lon: String) {
         viewModelScope.launch(Dispatchers.IO) {
             list.postValue(Repository.getWetharData(lat, lon))
         }
 
     }
-    fun getLocation(){
+
+    fun getLocation() {
         var gpsLocation = GPSLocation(context)
         gpsLocation.getLastLocation()
-        gpsLocation.mutable.observe(context as LifecycleOwner ){
-            getWeatherDataFromApi(it.second,it.first)
+        gpsLocation.mutable.observe(context as LifecycleOwner) {
+            getWeatherDataFromApi(it.second, it.first)
 
         }
     }
-    fun addToFav(lat :String,lon :String){
-        getWeatherDataFromApi(lat,lon)
-            accessList.observe(context as LifecycleOwner){
-                viewModelScope.launch(Dispatchers.IO){
-                    val insertLocation =
-                        DataBase.LocationDataBase.getInstance(context).locations().insertLocation(it)
+
+    fun addToFav(lat: String, lon: String) {
+        getWeatherDataFromApi(lat, lon)
+        accessList.observe(context as LifecycleOwner) {
+            viewModelScope.launch(Dispatchers.IO) {
+                launch {
+                    DataBase.LocationDataBase.getInstance(context).locations().insertLocation(it)
+
+                }.join()
+                launch {
+                    favList.postValue(
+                        DataBase.LocationDataBase.getInstance(context).locations().getAllLocations()
+                    )
 
                 }
-                }
+
+            }
         }
-    fun getFavLocations(){
+    }
+
+    fun getFavLocations() {
+
         viewModelScope.launch(Dispatchers.IO) {
-            favList.postValue(DataBase.LocationDataBase.getInstance(context).locations().getAllLocations())
+            Log.i("done", "getFavLocations: ")
+            favList.postValue(
+                DataBase.LocationDataBase.getInstance(context).locations().getAllLocations()
+            )
         }
     }
-
 
 
 }
