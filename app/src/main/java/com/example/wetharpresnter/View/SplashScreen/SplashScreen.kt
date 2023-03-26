@@ -3,6 +3,7 @@ package com.example.wetharpresnter.View.SplashScreen
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.wetharpresnter.View.MainActivity.MainActivity
 import com.example.wetharpresnter.View.SettingScreen.SettingScreen
 import com.example.wetharpresnter.databinding.ActivitySplashScreenBinding
 
@@ -14,7 +15,7 @@ class SplashScreen : AppCompatActivity() {
         setContentView(binding.root)
         binding.lottieSplash.animate().translationX(1400f).setStartDelay(5700)
             .withEndAction {
-                startActivity(Intent(this, SettingScreen::class.java))
+                startActivity(Intent(this, MainActivity::class.java))
                 finish()
         }
     }

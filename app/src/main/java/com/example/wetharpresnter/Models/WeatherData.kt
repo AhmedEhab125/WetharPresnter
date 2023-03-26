@@ -1,7 +1,6 @@
 package com.example.wetharpresnter.Models
 
 import androidx.room.*
-import com.example.wetharpresnter.HourTypeConverter
 
 @Entity(tableName = "Locations")
 data class WeatherData(

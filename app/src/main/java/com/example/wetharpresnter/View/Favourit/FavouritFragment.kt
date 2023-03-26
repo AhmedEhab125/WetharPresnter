@@ -37,8 +37,8 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
     lateinit var btnSaveLocation: Button
     var lat: Double? = null
     var lon: Double? = null
-    lateinit var viewModelFactory :ViewModelFactory
-    lateinit var viewModelProvider  :HomeViewModel
+    lateinit var viewModelFactory: ViewModelFactory
+    lateinit var viewModelProvider: HomeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,15 +53,21 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModelFactory= ViewModelFactory(requireContext())
-        viewModelProvider  = ViewModelProvider(requireActivity(),viewModelFactory).get(HomeViewModel::class.java)
-          viewModelProvider.getFavLocations()
+        viewModelFactory = ViewModelFactory(requireContext())
+        viewModelProvider =
+            ViewModelProvider(requireActivity(), viewModelFactory).get(HomeViewModel::class.java)
+        viewModelProvider.getFavLocations()
+        var favAdapter= FavouritLocationAdapter(arrayListOf())
+        binding.rvFavouritLocations.apply {
+            adapter =favAdapter
+            layoutManager = GridLayoutManager(requireContext(), 2)
 
-        viewModelProvider.accessFavList.observe(requireActivity()){list->
-            binding.rvFavouritLocations.apply {
-                adapter=FavouritLocationAdapter(list as ArrayList<WeatherData>)
-                layoutManager=GridLayoutManager(requireContext(),2)
-            }
+        }
+
+        viewModelProvider.accessFavList.observe(requireActivity()) { list ->
+            favAdapter.setFavList(list as ArrayList<WeatherData>)
+            binding.swiperefresh.isRefreshing=false
+
         }
 
 
@@ -70,6 +76,9 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
             viewModelProvider.getFavLocations()
             locationSearch()
 
+        }
+        binding.swiperefresh.setOnRefreshListener {
+            viewModelProvider.getFavLocations()
         }
     }
 
@@ -84,14 +93,16 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
         var markerOption = MarkerOptions().position(selectedLocation).title("selected")
         var marker = googleMap.addMarker(markerOption)
         googleMap.setOnMapLongClickListener { lis ->
+
             var selectedLocation = LatLng(lis.latitude, lis.longitude)
             marker?.position = selectedLocation
             btnSaveLocation.setOnClickListener {
                 lat = lis.latitude
                 lon = lis.longitude
-                viewModelProvider.addToFav(lat.toString(),lon.toString())
-
+                viewModelProvider.addToFav(lat.toString(), lon.toString())
+                viewModelProvider.getFavLocations()
                 dialog.dismiss()
+
             }
         }
     }
@@ -109,10 +120,9 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
         )
         map.getMapAsync(this)
         map.onCreate(savedInstanceState)
-        btnSaveLocation = dialog.findViewById<Button>(R.id.btn_save_location)
+        btnSaveLocation = dialog.findViewById(R.id.btn_save_location)
 
         btnSaveLocation.setOnClickListener {
-            viewModelProvider.getFavLocations()
             dialog.dismiss()
         }
     }
@@ -164,14 +174,13 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
             override fun onQueryTextSubmit(query: String): Boolean {
                 var geoCoder = Geocoder(requireContext())
                 var addressList = arrayListOf<Address>()
-                addressList = geoCoder.getFromLocationName(query,1) as ArrayList<Address>
-                if(addressList.size>0){
-                    var address =addressList.get(0)
-                    var area =address.adminArea
-                    var lat =address.latitude
-                    var long =address.longitude
-                    goToAddress(lat , long ,10f)
-
+                addressList = geoCoder.getFromLocationName(query, 1) as ArrayList<Address>
+                if (addressList.size > 0) {
+                    var address = addressList.get(0)
+                    var area = address.adminArea
+                    var lat = address.latitude
+                    var long = address.longitude
+                    goToAddress(lat, long, 10f)
                 }
                 return false
             }
@@ -182,8 +191,8 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun goToAddress(lat: Double, lon: Double, fl: Float) {
-        var latLang =LatLng(lat,lon)
-        var camera=CameraUpdateFactory.newLatLngZoom(latLang,fl)
+        var latLang = LatLng(lat, lon)
+        var camera = CameraUpdateFactory.newLatLngZoom(latLang, fl)
         map.getMapAsync { it.animateCamera(camera) }
     }
 }

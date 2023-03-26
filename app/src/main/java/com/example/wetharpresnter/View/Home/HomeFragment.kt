@@ -1,12 +1,12 @@
 package com.example.wetharpresnter.View.Home
 
 import android.R
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Button
+import androidx.constraintlayout.widget.Constraints
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +17,6 @@ import com.bumptech.glide.Glide
 import com.example.wetharpresnter.ViewModel.HomeViewModel
 import com.example.wetharpresnter.ViewModel.ViewModelFactory
 import com.example.wetharpresnter.databinding.FragmentHomeBinding
-import com.facebook.shimmer.ShimmerFrameLayout
 
 
 /**
@@ -43,8 +42,11 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getAndSetWeatherData()
+        dialogSettingView()
 
+        binding.swiperefresh.setOnRefreshListener {
+            getAndSetWeatherData()
+        }
         binding.shimmerViewContainer.startShimmer() // If auto-start is set to false
 
 
@@ -52,7 +54,6 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        getAndSetWeatherData()
 
 
     }
@@ -89,6 +90,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment() {
             }
 
             binding.shimmerViewContainer.hideShimmer()
+            binding.swiperefresh.isRefreshing=false
         }
 
         handelViewPagerWithRecycleView()
@@ -126,6 +128,24 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment() {
     override fun onPause() {
         super.onPause()
         Log.i("Stoped", "onPause: ")
+    }
+    fun dialogSettingView(){
+        var dialog =Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(com.example.wetharpresnter.R.layout.start_setting_dialog_iteam)
+        val window: Window? = dialog.getWindow()
+        window?.setLayout(
+            Constraints.LayoutParams.MATCH_PARENT,
+            Constraints.LayoutParams.WRAP_CONTENT
+        )
+        window?.setBackgroundDrawableResource(R.color.transparent);
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+        dialog.findViewById<Button>(com.example.wetharpresnter.R.id.btn_save).setOnClickListener {
+            dialog.dismiss()
+            getAndSetWeatherData()
+        }
+
     }
 
 }

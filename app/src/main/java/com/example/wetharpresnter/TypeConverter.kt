@@ -1,6 +1,5 @@
 package com.example.wetharpresnter
 
-import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import com.example.wetharpresnter.Models.Alerts
 import com.example.wetharpresnter.Models.Daily
@@ -9,10 +8,9 @@ import com.example.wetharpresnter.Models.Weather
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
-import java.util.*
 import kotlin.collections.ArrayList
 
-class HourTypeConverter {
+class TypeConverter {
     var gson = Gson()
 
     @TypeConverter
