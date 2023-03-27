@@ -53,6 +53,7 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().supportFragmentManager.beginTransaction().addToBackStack("Fav")
         viewModelFactory = ViewModelFactory(requireContext())
         viewModelProvider =
             ViewModelProvider(requireActivity(), viewModelFactory).get(HomeViewModel::class.java)

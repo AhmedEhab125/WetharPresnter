@@ -43,6 +43,8 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dialogSettingView()
+        requireActivity().supportFragmentManager.beginTransaction().addToBackStack("Home")
+
 
         binding.swiperefresh.setOnRefreshListener {
             getAndSetWeatherData()

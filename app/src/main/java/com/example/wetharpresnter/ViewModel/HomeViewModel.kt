@@ -7,12 +7,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wetharpresnter.DataBase.DataBase
 import com.example.wetharpresnter.Location.GPSLocation
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Repo.Repository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class HomeViewModel(private var context: Context) : ViewModel() {
@@ -24,7 +22,6 @@ class HomeViewModel(private var context: Context) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             list.postValue(Repository.getWetharData(lat, lon))
         }
-
     }
 
     fun getLocation() {
@@ -40,16 +37,11 @@ class HomeViewModel(private var context: Context) : ViewModel() {
         getWeatherDataFromApi(lat, lon)
         accessList.observe(context as LifecycleOwner) {
             viewModelScope.launch(Dispatchers.IO) {
-                launch {
-                    DataBase.LocationDataBase.getInstance(context).locations().insertLocation(it)
 
-                }.join()
-                launch {
-                    favList.postValue(
-                        DataBase.LocationDataBase.getInstance(context).locations().getAllLocations()
-                    )
+                    Repository.insertFavouriteLocation(context,it)
+                    favList.postValue(Repository.getFavouriteLocations(context))
 
-                }
+
 
             }
         }
@@ -60,7 +52,7 @@ class HomeViewModel(private var context: Context) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             Log.i("done", "getFavLocations: ")
             favList.postValue(
-                DataBase.LocationDataBase.getInstance(context).locations().getAllLocations()
+                Repository.getFavouriteLocations(context)
             )
         }
     }
