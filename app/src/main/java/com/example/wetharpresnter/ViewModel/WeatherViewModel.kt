@@ -13,22 +13,22 @@ import com.example.wetharpresnter.Repo.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private var context: Context) : ViewModel() {
+class WeatherViewModel(private var context: Context) : ViewModel() {
     private var list: MutableLiveData<WeatherData> = MutableLiveData<WeatherData>()
     private var favList = MutableLiveData<List<WeatherData>>()
     var accessList: LiveData<WeatherData> = list
     var accessFavList: LiveData<List<WeatherData>> = favList
-    fun getWeatherDataFromApi(lat: String, lon: String) {
+    fun getWeatherDataFromApi(lat: String, lon: String,lang :String="en") {
         viewModelScope.launch(Dispatchers.IO) {
-            list.postValue(Repository.getWetharData(lat, lon))
+            list.postValue(Repository.getWetharData(lat, lon,lang))
         }
     }
 
-    fun getLocation() {
+    fun getLocation(lang: String = "en") {
         var gpsLocation = GPSLocation(context)
         gpsLocation.getLastLocation()
         gpsLocation.mutable.observe(context as LifecycleOwner) {
-            getWeatherDataFromApi(it.second, it.first)
+            getWeatherDataFromApi(it.second, it.first,lang)
 
         }
     }
@@ -39,10 +39,9 @@ class HomeViewModel(private var context: Context) : ViewModel() {
             viewModelScope.launch(Dispatchers.IO) {
 
                     Repository.insertFavouriteLocation(context,it)
-                    favList.postValue(Repository.getFavouriteLocations(context))
-
-
-
+                Repository.getFavouriteLocations(context).collect{
+                    favList.postValue(it)
+                }
             }
         }
     }
@@ -51,9 +50,9 @@ class HomeViewModel(private var context: Context) : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             Log.i("done", "getFavLocations: ")
-            favList.postValue(
-                Repository.getFavouriteLocations(context)
-            )
+            Repository.getFavouriteLocations(context).collect{
+                favList.postValue(it)
+            }
         }
     }
 

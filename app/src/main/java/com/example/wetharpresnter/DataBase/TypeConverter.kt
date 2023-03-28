@@ -1,4 +1,4 @@
-package com.example.wetharpresnter
+package com.example.wetharpresnter.DataBase
 
 import androidx.room.TypeConverter
 import com.example.wetharpresnter.Models.Alerts
@@ -40,6 +40,7 @@ class TypeConverter {
     fun someObjectListToStringHour(someObjects: ArrayList<Daily?>?): String {
         return gson.toJson(someObjects)
     }
+
     @TypeConverter
     fun stringToSomeObjectListAlerts(data: String?): ArrayList<Alerts> {
         if (data == null) {
@@ -53,6 +54,7 @@ class TypeConverter {
     fun someObjectListToStringAlerts(someObjects: ArrayList<Alerts?>?): String {
         return gson.toJson(someObjects)
     }
+
     @TypeConverter
     fun stringToSomeObjectListWeathar(data: String?): ArrayList<Weather> {
         if (data == null) {

@@ -1,6 +1,7 @@
 package com.example.wetharpresnter.View.MainActivity
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.View.Alert.AlertFragment
@@ -39,4 +40,6 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
     }
+
+
 }

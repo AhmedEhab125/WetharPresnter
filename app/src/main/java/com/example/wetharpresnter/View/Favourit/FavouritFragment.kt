@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.SearchView
@@ -14,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.R
-import com.example.wetharpresnter.ViewModel.HomeViewModel
+import com.example.wetharpresnter.ViewModel.WeatherViewModel
 import com.example.wetharpresnter.ViewModel.ViewModelFactory
 import com.example.wetharpresnter.databinding.FragmentFavouritBinding
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -22,7 +21,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
 /**
@@ -38,7 +36,7 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
     var lat: Double? = null
     var lon: Double? = null
     lateinit var viewModelFactory: ViewModelFactory
-    lateinit var viewModelProvider: HomeViewModel
+    lateinit var viewModelProvider: WeatherViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,7 +54,7 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
         requireActivity().supportFragmentManager.beginTransaction().addToBackStack("Fav")
         viewModelFactory = ViewModelFactory(requireContext())
         viewModelProvider =
-            ViewModelProvider(requireActivity(), viewModelFactory).get(HomeViewModel::class.java)
+            ViewModelProvider(requireActivity(), viewModelFactory).get(WeatherViewModel::class.java)
         viewModelProvider.getFavLocations()
         var favAdapter= FavouritLocationAdapter(arrayListOf())
         binding.rvFavouritLocations.apply {

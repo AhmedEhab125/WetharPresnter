@@ -18,11 +18,20 @@ data class WeatherData(
     var alerts: ArrayList<Alerts> = arrayListOf(),
 
 
+    ) {
 
-){
 
-
-    constructor() : this(0.0,0.0,"",0,null, arrayListOf(),arrayListOf(),arrayListOf(),arrayListOf())
+    constructor() : this(
+        0.0,
+        0.0,
+        "",
+        0,
+        null,
+        arrayListOf(),
+        arrayListOf(),
+        arrayListOf(),
+        arrayListOf()
+    )
 
 }
 

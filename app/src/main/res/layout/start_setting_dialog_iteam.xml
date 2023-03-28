@@ -28,6 +28,7 @@
             app:layout_constraintVertical_bias="1.0">
 
             <RadioGroup
+                android:id="@+id/rg_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#00FFFFFF"
@@ -47,6 +48,8 @@
                     android:id="@+id/rb_GPS"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@color/city_Color"
+                    android:checked="true"
                     android:text="GPS"
                     android:textColor="#b5c4cd"
                     android:textSize="20sp" />
@@ -55,6 +58,7 @@
                     android:id="@+id/rb_chosse_location_from_map"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@color/city_Color"
                     android:text="@string/location"
                     android:textColor="#b5c4cd"
                     android:textSize="20sp" />
@@ -76,6 +80,7 @@
             app:layout_constraintTop_toBottomOf="@+id/cvLocation">
 
             <RadioGroup
+                android:id="@+id/rg_lang"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#00FFFFFF"
@@ -91,18 +96,21 @@
                     android:textSize="24sp" />
 
                 <RadioButton
-                    android:id="@+id/rb_arabic"
+                    android:id="@+id/rb_english"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/arabic"
+                    android:layout_height="match_parent"
+                    android:buttonTint="@color/city_Color"
+                    android:checked="true"
+                    android:text="@string/english"
                     android:textColor="#b5c4cd"
                     android:textSize="20sp" />
 
                 <RadioButton
-                    android:id="@+id/rb_english"
+                    android:id="@+id/rb_arabic"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/english"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/city_Color"
+                    android:text="@string/arabic"
                     android:textColor="#b5c4cd"
                     android:textSize="20sp" />
 
