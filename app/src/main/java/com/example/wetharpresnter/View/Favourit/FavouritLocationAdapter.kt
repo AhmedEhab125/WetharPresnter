@@ -12,6 +12,10 @@ import com.example.wetharpresnter.databinding.WeatherByDayIteamBinding
 class FavouritLocationAdapter(var list: ArrayList<WeatherData>) :
     RecyclerView.Adapter<FavouritLocationAdapter.ViewHolder>() {
     lateinit var binding: FavouritLocationIteamBinding
+    fun setFavList( list:ArrayList<WeatherData>){
+        this.list=list
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         var layoutInflater = LayoutInflater.from(parent.context)

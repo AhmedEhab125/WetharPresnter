@@ -1,7 +1,6 @@
 package com.example.wetharpresnter.Models
 
 import androidx.room.*
-import com.example.wetharpresnter.HourTypeConverter
 
 @Entity(tableName = "Locations")
 data class WeatherData(
@@ -19,11 +18,20 @@ data class WeatherData(
     var alerts: ArrayList<Alerts> = arrayListOf(),
 
 
+    ) {
 
-){
 
-
-    constructor() : this(0.0,0.0,"",0,null, arrayListOf(),arrayListOf(),arrayListOf(),arrayListOf())
+    constructor() : this(
+        0.0,
+        0.0,
+        "",
+        0,
+        null,
+        arrayListOf(),
+        arrayListOf(),
+        arrayListOf(),
+        arrayListOf()
+    )
 
 }
 

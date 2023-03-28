@@ -87,6 +87,9 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     //loading like facebook
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
+    // sweep refresh
+        implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
+
 
 
 

@@ -1,7 +1,8 @@
 package com.example.wetharpresnter.View.MainActivity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.View.Alert.AlertFragment
 import com.example.wetharpresnter.View.Favourit.FavouritFragment
@@ -32,4 +33,13 @@ class MainActivity : AppCompatActivity() {
             TabLayoutMediator.TabConfigurationStrategy { tab, position ->tab .icon=getDrawable(iconList.get(position)) }).attach()
 
     }
+    override fun onBackPressed() {
+        if (binding.vpScreenTitles.getCurrentItem() !== 0) {
+            binding.vpScreenTitles.setCurrentItem( binding.vpScreenTitles.getCurrentItem() - 1, false)
+        } else {
+            finish()
+        }
+    }
+
+
 }
