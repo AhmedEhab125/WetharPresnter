@@ -1,16 +1,18 @@
 package com.example.wetharpresnter.View.Home
 
+import android.content.SharedPreferences
 import android.icu.text.SimpleDateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.Models.Daily
 import com.example.wetharpresnter.databinding.WeatherByDayIteamBinding
 import java.util.*
 
-class DaysWeatherDataAdapter(var list: List<Daily>) :
+class DaysWeatherDataAdapter(var list: List<Daily> ,var configrations: SharedPreferences) :
     RecyclerView.Adapter<DaysWeatherDataAdapter.ViewHolder>() {
     lateinit var binding: WeatherByDayIteamBinding
 
@@ -32,7 +34,7 @@ class DaysWeatherDataAdapter(var list: List<Daily>) :
 
         var date: Date = simpleDate.parse(currentDate)
         Log.i("TAG", currentDate)
-        var outFormat = SimpleDateFormat("EEEE")
+        var outFormat = SimpleDateFormat("EEEE",Locale(configrations.getString(Constants.LANG, "")))
         var goal = outFormat.format(date)
 
         holder.binding.tvDiscription.text = list.get(position).weather.get(0).description

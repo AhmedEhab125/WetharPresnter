@@ -6,10 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.View.Home.DaysWeatherDataAdapter
+import com.example.wetharpresnter.ViewModel.WeatherViewModel
 import com.example.wetharpresnter.databinding.FavouritLocationIteamBinding
 import com.example.wetharpresnter.databinding.WeatherByDayIteamBinding
 
-class FavouritLocationAdapter(var list: ArrayList<WeatherData>) :
+class FavouritLocationAdapter(var list: ArrayList<WeatherData>, var viewModelProvider: WeatherViewModel) :
     RecyclerView.Adapter<FavouritLocationAdapter.ViewHolder>() {
     lateinit var binding: FavouritLocationIteamBinding
     fun setFavList( list:ArrayList<WeatherData>){
@@ -33,6 +34,11 @@ class FavouritLocationAdapter(var list: ArrayList<WeatherData>) :
         var uri =
             "https://openweathermap.org/img/wn/${list.get(position).current?.weather?.get(0)?.icon}@2x.png"
         Glide.with(binding.root).load(uri).into(binding.ivLocation)
+        holder.binding.btnDeleteFromFav.setOnClickListener {
+            viewModelProvider.deleteFromFav(list.get(position))
+            list.remove(list.get(position))
+            notifyDataSetChanged()
+        }
     }
 
     class ViewHolder(var binding: FavouritLocationIteamBinding) :

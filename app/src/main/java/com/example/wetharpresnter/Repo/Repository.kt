@@ -1,6 +1,7 @@
 package com.example.wetharpresnter.Repo
 
 import android.content.Context
+import androidx.room.Delete
 import com.example.wetharpresnter.DataBase.DataBase
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.WeatherService
@@ -16,6 +17,9 @@ class Repository {
         }
         suspend fun insertFavouriteLocation(context: Context, weatherData: WeatherData){
             DataBase.LocationDataBase.getInstance(context).locations().insertLocation(weatherData)
+        }
+        suspend fun DeleteFavouriteLocation(context: Context, weatherData: WeatherData){
+            DataBase.LocationDataBase.getInstance(context).locations().deleteLocation(weatherData)
         }
     }
 }

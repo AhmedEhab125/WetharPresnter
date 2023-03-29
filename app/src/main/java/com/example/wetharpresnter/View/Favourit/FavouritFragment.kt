@@ -53,10 +53,9 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().supportFragmentManager.beginTransaction().addToBackStack("Fav")
         viewModelFactory = ViewModelFactory(requireContext())
-        viewModelProvider =
-            ViewModelProvider(requireActivity(), viewModelFactory).get(WeatherViewModel::class.java)
+        viewModelProvider = ViewModelProvider(requireActivity(), viewModelFactory).get(WeatherViewModel::class.java)
         viewModelProvider.getFavLocations()
-        var favAdapter= FavouritLocationAdapter(arrayListOf())
+        var favAdapter= FavouritLocationAdapter(arrayListOf(),viewModelProvider)
         binding.rvFavouritLocations.apply {
             adapter =favAdapter
             layoutManager = GridLayoutManager(requireContext(), 2)
@@ -92,12 +91,13 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
 
             var selectedLocation = LatLng(lis.latitude, lis.longitude)
             marker?.position = selectedLocation
-            btnSaveLocation.setOnClickListener {
-                lat = lis.latitude
-                lon = lis.longitude
+            lat = lis.latitude
+            lon = lis.longitude
 
+            btnSaveLocation.setOnClickListener {
                 viewModelProvider.addToFav(lat.toString(), lon.toString())
                 dialog.dismiss()
+
 
 
             }

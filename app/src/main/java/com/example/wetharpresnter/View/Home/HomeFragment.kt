@@ -128,7 +128,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             }
 
             binding.rvDayWeather.apply {
-                adapter = DaysWeatherDataAdapter(weatherData.daily)
+                adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
                 layoutManager = LinearLayoutManager(requireContext())
             }
 
@@ -172,7 +172,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             }
 
             binding.rvDayWeather.apply {
-                adapter = DaysWeatherDataAdapter(weatherData.daily)
+                adapter = DaysWeatherDataAdapter(weatherData.daily,configrations)
                 layoutManager = LinearLayoutManager(requireContext())
             }
 
