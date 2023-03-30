@@ -1,16 +1,20 @@
 package com.example.wetharpresnter.View.Favourit
 
+import android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.wetharpresnter.Models.WeatherData
+import com.example.wetharpresnter.ShowFavLocationData
+import com.example.wetharpresnter.ShowFavouriteLocationsData
 import com.example.wetharpresnter.View.Home.DaysWeatherDataAdapter
 import com.example.wetharpresnter.ViewModel.WeatherViewModel
 import com.example.wetharpresnter.databinding.FavouritLocationIteamBinding
 import com.example.wetharpresnter.databinding.WeatherByDayIteamBinding
 
-class FavouritLocationAdapter(var list: ArrayList<WeatherData>, var viewModelProvider: WeatherViewModel) :
+class FavouritLocationAdapter(var list: ArrayList<WeatherData>, var viewModelProvider: WeatherViewModel,var listner: ShowFavLocationData) :
     RecyclerView.Adapter<FavouritLocationAdapter.ViewHolder>() {
     lateinit var binding: FavouritLocationIteamBinding
     fun setFavList( list:ArrayList<WeatherData>){
@@ -34,6 +38,11 @@ class FavouritLocationAdapter(var list: ArrayList<WeatherData>, var viewModelPro
         var uri =
             "https://openweathermap.org/img/wn/${list.get(position).current?.weather?.get(0)?.icon}@2x.png"
         Glide.with(binding.root).load(uri).into(binding.ivLocation)
+        holder.binding.cvLocation.setOnClickListener {
+            listner.show(list.get(position))
+
+        }
+
         holder.binding.btnDeleteFromFav.setOnClickListener {
             viewModelProvider.deleteFromFav(list.get(position))
             list.remove(list.get(position))

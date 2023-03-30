@@ -11,6 +11,11 @@ class Constants
         const val GPS ="GPS"
         const val MAP ="MAP"
 
+        const val UNITS="units"
+        const val IMPERIAL ="imperial"
+        const val METRIC ="metric"
+        const val DEFAULT ="default"
+
 
     }
 

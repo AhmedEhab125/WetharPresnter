@@ -15,4 +15,7 @@
     <string name="today">Today</string>
     <string name="title_activity_map">Map</string>
     <string name="save_location">Save Location</string>
+    <string name="Kelvin_meter_sec">Kelvin (meter/sec)</string>
+    <string name="Celsius_meter_sec_">Celsius (meter/sec)</string>
+    <string name="Fahrenheit_miles_hour">Fahrenheit (miles/hour)</string>
 </resources>

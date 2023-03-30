@@ -7,14 +7,19 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Button
 import android.widget.SearchView
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.Constraints
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.R
-import com.example.wetharpresnter.ViewModel.WeatherViewModel
+import com.example.wetharpresnter.ShowFavLocationData
+import com.example.wetharpresnter.ShowFavouriteLocationsData
 import com.example.wetharpresnter.ViewModel.ViewModelFactory
+import com.example.wetharpresnter.ViewModel.WeatherViewModel
 import com.example.wetharpresnter.databinding.FragmentFavouritBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -28,7 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions
  * Use the [FavouritFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class FavouritFragment : Fragment(), OnMapReadyCallback {
+class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
     lateinit var binding: FragmentFavouritBinding
     lateinit var dialog: Dialog
     lateinit var map: MapView
@@ -51,11 +56,10 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().supportFragmentManager.beginTransaction().addToBackStack("Fav")
         viewModelFactory = ViewModelFactory(requireContext())
         viewModelProvider = ViewModelProvider(requireActivity(), viewModelFactory).get(WeatherViewModel::class.java)
         viewModelProvider.getFavLocations()
-        var favAdapter= FavouritLocationAdapter(arrayListOf(),viewModelProvider)
+        var favAdapter= FavouritLocationAdapter(arrayListOf(),viewModelProvider,this)
         binding.rvFavouritLocations.apply {
             adapter =favAdapter
             layoutManager = GridLayoutManager(requireContext(), 2)
@@ -76,6 +80,7 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
         binding.swiperefresh.setOnRefreshListener {
             viewModelProvider.getFavLocations()
         }
+
     }
 
     private fun showMap() {
@@ -97,7 +102,6 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
             btnSaveLocation.setOnClickListener {
                 viewModelProvider.addToFav(lat.toString(), lon.toString())
                 dialog.dismiss()
-
 
 
             }
@@ -134,6 +138,11 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
     override fun onPause() {
         super.onPause()
         map.onPause()
+        binding.fragmentContainerView.visibility=View.GONE
+        binding.rvFavouritLocations.visibility=View.VISIBLE
+        binding.addLocation.visibility=View.VISIBLE
+        binding.swiperefresh.isEnabled=true
+
     }
 
     override fun onDestroy() {
@@ -178,11 +187,13 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
                     var lat = address.latitude
                     var long = address.longitude
                     goToAddress(lat, long, 10f)
+
                 }
                 return false
             }
 
         })
+
 
 
     }
@@ -191,5 +202,16 @@ class FavouritFragment : Fragment(), OnMapReadyCallback {
         var latLang = LatLng(lat, lon)
         var camera = CameraUpdateFactory.newLatLngZoom(latLang, fl)
         map.getMapAsync { it.animateCamera(camera) }
+    }
+
+    override fun show(weatherData: WeatherData) {
+   childFragmentManager.beginTransaction()
+        .replace(R.id.fragmentContainerView,ShowFavouriteLocationsData(weatherData)).addToBackStack(null).commit()
+        binding.fragmentContainerView.visibility=View.VISIBLE
+        binding.rvFavouritLocations.visibility=View.GONE
+        binding.addLocation.visibility=View.GONE
+        binding.swiperefresh.isEnabled=false
+
+
     }
 }
