@@ -44,7 +44,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     lateinit var viewModelProvider: WeatherViewModel
     lateinit var dialog: Dialog
     lateinit var map: MapView
-    lateinit var geoCoder :Geocoder
+    lateinit var geoCoder: Geocoder
     var addressList = arrayListOf<Address>()
 
 
@@ -102,18 +102,15 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     }
 
     fun getAndSetWeatherDataFromGPS() {
-
-
-        if (configrations.getString(Constants.LANG, "").equals(Constants.ARABIC)) {
-            viewModelProvider.getLocation(Constants.ARABIC)
-        } else {
-            viewModelProvider.getLocation()
-        }
+        var lang = configrations.getString(Constants.LANG, "")
+        var unit = configrations.getString(Constants.UNITS, "")
+        viewModelProvider.getLocation(lang = lang ?: Constants.ENGLISH, unit ?: Constants.DEFAULT)
 
         viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
             println(weatherData.lon)
             println(weatherData.current?.weather?.get(0)?.main)
-           addressList = geoCoder.getFromLocation(weatherData.lat,weatherData.lon,1) as ArrayList<Address>
+            addressList =
+                geoCoder.getFromLocation(weatherData.lat, weatherData.lon, 1) as ArrayList<Address>
             if (addressList.size > 0) {
                 var address = addressList.get(0)
 
@@ -122,7 +119,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
 
             var temp = Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
 
-            binding.tvTempreture.text = temp.toString()+  "°C"
+            binding.tvTempreture.text = temp.toString() + "°C"
             binding.tvWetharState.text = weatherData.current?.weather?.get(0)?.main
 
             var uri =
@@ -155,14 +152,20 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     }
 
     fun getAndSetWeatherDataFromMap(lat: String, lon: String) {
-        if (configrations.getString(Constants.LANG, "").equals(Constants.ARABIC)) {
-            viewModelProvider.getWeatherDataFromApi(lat, lon, Constants.ARABIC)
-        } else {
-            viewModelProvider.getWeatherDataFromApi(lat, lon)
-        }
+        var lang = configrations.getString(Constants.LANG, "")
+        var unit = configrations.getString(Constants.UNITS, "")
+
+        viewModelProvider.getWeatherDataFromApi(
+            lat,
+            lon,
+            lang ?: Constants.ENGLISH,
+            unit ?: Constants.DEFAULT
+        )
+
 
         viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
-            addressList = geoCoder.getFromLocation(weatherData.lat,weatherData.lon,1) as ArrayList<Address>
+            addressList =
+                geoCoder.getFromLocation(weatherData.lat, weatherData.lon, 1) as ArrayList<Address>
             if (addressList.size > 0) {
                 var address = addressList.get(0)
 
@@ -191,7 +194,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             }
 
             binding.rvDayWeather.apply {
-                adapter = DaysWeatherDataAdapter(weatherData.daily,configrations)
+                adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
                 layoutManager = LinearLayoutManager(requireContext())
             }
 
