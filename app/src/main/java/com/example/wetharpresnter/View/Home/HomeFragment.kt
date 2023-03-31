@@ -38,15 +38,14 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     lateinit var binding: FragmentHomeBinding
     lateinit var configrations: SharedPreferences
     lateinit var btnSaveLocation: Button
-    var lat: Double? = 0.0
-    var lon: Double? = 0.0
+    var lat: Double? = null
+    var lon: Double? = null
     lateinit var viewModelFactory: ViewModelFactory
     lateinit var viewModelProvider: WeatherViewModel
     lateinit var dialog: Dialog
     lateinit var map: MapView
     lateinit var geoCoder :Geocoder
     var addressList = arrayListOf<Address>()
-
 
 
     override fun onCreateView(
@@ -80,7 +79,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
                 getAndSetWeatherDataFromGPS()
             } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
-                getAndSetWeatherDataFromMap(lat = lat.toString(), lon = lon.toString())
+                dialog.show()
             }
         }
         binding.shimmerViewContainer.startShimmer() // If auto-start is set to false
@@ -96,7 +95,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
         if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
             getAndSetWeatherDataFromGPS()
         } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
-            getAndSetWeatherDataFromMap(lat = lat.toString(), lon = lon.toString())
+            dialog.show()
         }
 
 
@@ -112,18 +111,18 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
         }
 
         viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
-            addressList = geoCoder.getFromLocation(weatherData.lat,weatherData.lon,1) as ArrayList<Address>
+            println(weatherData.lon)
+            println(weatherData.current?.weather?.get(0)?.main)
+           addressList = geoCoder.getFromLocation(weatherData.lat,weatherData.lon,1) as ArrayList<Address>
             if (addressList.size > 0) {
                 var address = addressList.get(0)
-                lat=address.latitude
-                lon=address.longitude
 
                 binding.tvCityName.text = address.countryName
             }
 
             var temp = Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
 
-            binding.tvTempreture.text = temp.toString() + "°C"
+            binding.tvTempreture.text = temp.toString()+  "°C"
             binding.tvWetharState.text = weatherData.current?.weather?.get(0)?.main
 
             var uri =

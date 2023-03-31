@@ -13,7 +13,7 @@ class Repository {
         fun getWetharData(lat :String,lon :String ,lang: String="en",unit :String=Constants.DEFAULT): WeatherData? {
             return WeatherService.getWetharData(lat, lon, lang,unit)
         }
-        suspend fun getFavouriteLocations(context: Context): Flow<List<WeatherData>> {
+         fun getFavouriteLocations(context: Context): Flow<List<WeatherData>> {
            return DataBase.LocationDataBase.getInstance(context).locations().getAllLocations()
         }
         suspend fun insertFavouriteLocation(context: Context, weatherData: WeatherData){

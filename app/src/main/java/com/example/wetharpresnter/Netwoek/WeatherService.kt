@@ -11,7 +11,7 @@ object WeatherService {
     private val service = apiInstance.create(WeatherAPIs::class.java)
 
     fun getWetharData(lat :String,lon :String ,lang: String,unit :String): WeatherData? {
-        var data = service.getWetharData(lat,lon,lang,unit).execute().body()
+        var data = service.getWetharData(lat,lon,lang,units=unit).execute().body()
         return data
     }
 }
