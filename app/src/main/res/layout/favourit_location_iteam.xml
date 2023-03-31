@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cv_location"
     android:layout_width="175dp"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
@@ -18,7 +19,7 @@
             android:id="@+id/tv_loc_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:text="TextView"
             android:textColor="@color/city_Color"
             android:textSize="16sp"
@@ -26,7 +27,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.065" />
 
         <TextView
             android:id="@+id/tv_loc_temp"
@@ -38,9 +39,9 @@
             android:textColor="@color/white"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/tv_loc_name"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.437"
-            app:layout_constraintStart_toStartOf="@+id/tv_loc_name"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_location"
             app:layout_constraintVertical_bias="0.288" />
 
@@ -55,5 +56,14 @@
             app:layout_constraintVertical_bias="0.129"
             app:srcCompat="@drawable/pressure" />
 
+        <Button
+            android:id="@+id/btn_delete_from_fav"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/delete"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.cardview.widget.CardView>

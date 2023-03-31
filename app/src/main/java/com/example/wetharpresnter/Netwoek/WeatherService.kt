@@ -10,8 +10,8 @@ object WeatherService {
         .addConverterFactory(GsonConverterFactory.create()).build()
     private val service = apiInstance.create(WeatherAPIs::class.java)
 
-    fun getWetharData(lat :String,lon :String ,lang: String): WeatherData? {
-        var data = service.getWetharData(lat,lon,lang).execute().body()
+    fun getWetharData(lat :String,lon :String ,lang: String,unit :String): WeatherData? {
+        var data = service.getWetharData(lat,lon,lang,units=unit).execute().body()
         return data
     }
 }

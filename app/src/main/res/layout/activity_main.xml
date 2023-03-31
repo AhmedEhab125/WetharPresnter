@@ -28,7 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:tabIconTint="@drawable/fragment_icons_color"
-        app:tabIndicatorColor="#b2759e">
+        app:tabIndicatorColor="#363361">
 
 
     </com.google.android.material.tabs.TabLayout>

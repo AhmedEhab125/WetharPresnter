@@ -8,8 +8,10 @@ import kotlinx.coroutines.flow.Flow
 interface IDao {
     @Query("SELECT * FROM Locations")
      fun getAllLocations(): Flow<List<WeatherData>>
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLocation(weatherData: WeatherData) :Long
     @Delete
     suspend fun deleteLocation(weatherData: WeatherData)
+
+
 }

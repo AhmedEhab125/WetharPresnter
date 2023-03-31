@@ -3,6 +3,8 @@ package com.example.wetharpresnter.View.Home
 import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -42,6 +44,8 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     lateinit var viewModelProvider: WeatherViewModel
     lateinit var dialog: Dialog
     lateinit var map: MapView
+    lateinit var geoCoder :Geocoder
+    var addressList = arrayListOf<Address>()
 
 
     override fun onCreateView(
@@ -58,11 +62,13 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        geoCoder = Geocoder(requireContext())
         dialogInit(savedInstanceState)
         viewModelFactory = ViewModelFactory(requireContext())
         viewModelProvider = ViewModelProvider(requireActivity(), viewModelFactory).get(
             WeatherViewModel::class.java
         )
+
         if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
             getAndSetWeatherDataFromGPS()
         } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
@@ -96,6 +102,8 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     }
 
     fun getAndSetWeatherDataFromGPS() {
+
+
         if (configrations.getString(Constants.LANG, "").equals(Constants.ARABIC)) {
             viewModelProvider.getLocation(Constants.ARABIC)
         } else {
@@ -103,11 +111,18 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
         }
 
         viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
+            println(weatherData.lon)
+            println(weatherData.current?.weather?.get(0)?.main)
+           addressList = geoCoder.getFromLocation(weatherData.lat,weatherData.lon,1) as ArrayList<Address>
+            if (addressList.size > 0) {
+                var address = addressList.get(0)
 
-            binding.tvCityName.text = weatherData.timezone
+                binding.tvCityName.text = address.countryName
+            }
+
             var temp = Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
 
-            binding.tvTempreture.text = temp.toString() + "°C"
+            binding.tvTempreture.text = temp.toString()+  "°C"
             binding.tvWetharState.text = weatherData.current?.weather?.get(0)?.main
 
             var uri =
@@ -128,7 +143,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             }
 
             binding.rvDayWeather.apply {
-                adapter = DaysWeatherDataAdapter(weatherData.daily)
+                adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
                 layoutManager = LinearLayoutManager(requireContext())
             }
 
@@ -147,8 +162,12 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
         }
 
         viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
+            addressList = geoCoder.getFromLocation(weatherData.lat,weatherData.lon,1) as ArrayList<Address>
+            if (addressList.size > 0) {
+                var address = addressList.get(0)
 
-            binding.tvCityName.text = weatherData.timezone
+                binding.tvCityName.text = address.countryName
+            }
             var temp = Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
 
             binding.tvTempreture.text = temp.toString() + "°C"
@@ -172,7 +191,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             }
 
             binding.rvDayWeather.apply {
-                adapter = DaysWeatherDataAdapter(weatherData.daily)
+                adapter = DaysWeatherDataAdapter(weatherData.daily,configrations)
                 layoutManager = LinearLayoutManager(requireContext())
             }
 
@@ -233,6 +252,8 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             btnSaveLocation.setOnClickListener {
                 lat = lis.latitude
                 lon = lis.longitude
+
+
                 getAndSetWeatherDataFromMap(lat.toString(), lon.toString())
 
                 dialog.dismiss()

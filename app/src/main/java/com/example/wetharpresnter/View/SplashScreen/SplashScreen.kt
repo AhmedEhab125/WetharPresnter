@@ -12,7 +12,6 @@ import android.widget.RadioGroup
 import androidx.constraintlayout.widget.Constraints
 import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.View.MainActivity.MainActivity
-import com.example.wetharpresnter.View.SettingScreen.SettingScreen
 import com.example.wetharpresnter.databinding.ActivitySplashScreenBinding
 
 class SplashScreen : AppCompatActivity() {
