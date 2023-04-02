@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.wetharpresnter.*
+import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.ViewModel.ViewModelFactory
 import com.example.wetharpresnter.ViewModel.WeatherViewModel
 import com.example.wetharpresnter.databinding.FragmentHomeBinding
@@ -26,6 +27,8 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 
 
 /**
@@ -44,8 +47,9 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     lateinit var viewModelProvider: WeatherViewModel
     lateinit var dialog: Dialog
     lateinit var map: MapView
-    lateinit var geoCoder :Geocoder
+    lateinit var geoCoder: Geocoder
     var addressList = arrayListOf<Address>()
+    lateinit var snakbar: Snackbar
 
 
     override fun onCreateView(
@@ -69,51 +73,58 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             WeatherViewModel::class.java
         )
 
-        if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
-            getAndSetWeatherDataFromGPS()
-        } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
-            dialog.show()
-        }
 
-        binding.swiperefresh.setOnRefreshListener {
+        if (NetworkListener.getConnectivity(requireContext())) {
+
+
             if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
                 getAndSetWeatherDataFromGPS()
             } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
                 dialog.show()
             }
-        }
-        binding.shimmerViewContainer.startShimmer() // If auto-start is set to false
+            binding.swiperefresh.setOnRefreshListener {
+                if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
+                    getAndSetWeatherDataFromGPS()
+                } else if (configrations.getString(Constants.LOCATION, "")
+                        .equals(Constants.MAP)
+                ) {
+                    if (addressList.size > 0) {
+                        var address = addressList.get(0)
+                        viewModelProvider.getWeatherDataFromApi(
+                            address.latitude.toString(),
+                            address.longitude.toString()
+                        )
+                    }
 
+                }
+            }
+            binding.swiperefresh.visibility = View.VISIBLE
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-        map.onResume()
-        binding.swiperefresh.isRefreshing = true
-        binding.shimmerViewContainer.startShimmer() // If auto-start is set to false
-        if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
-            getAndSetWeatherDataFromGPS()
-        } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
-            dialog.show()
-        }
-
-
-    }
-
-    fun getAndSetWeatherDataFromGPS() {
-
-
-        if (configrations.getString(Constants.LANG, "").equals(Constants.ARABIC)) {
-            viewModelProvider.getLocation(Constants.ARABIC)
+            binding.shimmerViewContainer.startShimmer() // If auto-start is set to false
         } else {
-            viewModelProvider.getLocation()
+            binding.shimmerViewContainer.hideShimmer()
+            binding.swiperefresh.visibility = View.GONE
+            snakbar = Snackbar.make(
+                view.findViewById(R.id.scrol_view),
+                "No Network Connection",
+                Snackbar.LENGTH_LONG
+            )
+            showTempWeatherData()
+            snakbar.show()
         }
 
-        viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
-            println(weatherData.lon)
-            println(weatherData.current?.weather?.get(0)?.main)
-           addressList = geoCoder.getFromLocation(weatherData.lat,weatherData.lon,1) as ArrayList<Address>
+
+    }
+
+    fun showTempWeatherData() {
+        if (configrations.contains("tempWethearData")) {
+            var gson = Gson()
+            var weatherData: WeatherData = gson.fromJson(
+                configrations.getString("tempWethearData", ""),
+                WeatherData::class.java
+            )
+            addressList =
+                geoCoder.getFromLocation(weatherData.lat, weatherData.lon, 1) as ArrayList<Address>
             if (addressList.size > 0) {
                 var address = addressList.get(0)
 
@@ -122,12 +133,9 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
 
             var temp = Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
 
-            binding.tvTempreture.text = temp.toString()+  "°C"
+            binding.tvTempreture.text = temp.toString() + "°C"
             binding.tvWetharState.text = weatherData.current?.weather?.get(0)?.main
 
-            var uri =
-                "https://openweathermap.org/img/wn/${weatherData.current?.weather?.get(0)?.icon}@2x.png"
-            Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
             binding.tvHumidity.text =
                 Math.ceil((weatherData.current?.humidity)?.toDouble() ?: 0.0).toInt().toString()
             binding.tvPressure.text =
@@ -150,19 +158,117 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             binding.shimmerViewContainer.hideShimmer()
             binding.swiperefresh.isRefreshing = false
         }
+        handelViewPagerWithRecycleView()
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        map.onResume()
+
+        binding.swiperefresh.isRefreshing = true
+        binding.shimmerViewContainer.showShimmer(true) // If auto-start is set to false
+        if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
+            getAndSetWeatherDataFromGPS()
+
+        } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
+            if (Constants.mapFlag == true) {
+                dialog.show()
+                Log.i("ahmed", "onResume: truee")
+                Constants.mapFlag == false
+
+            } else {
+                Log.i("ahmed", "onResume: false")
+
+                if (addressList.size > 0) {
+                    addressList.get(0).latitude
+                    viewModelProvider.getWeatherDataFromApi(
+                        addressList.get(0).latitude.toString(),
+                        addressList.get(0).longitude.toString()
+                    )
+                }
+            }
+        }
+
+
+    }
+
+    fun getAndSetWeatherDataFromGPS() {
+        var lang = configrations.getString(Constants.LANG, "")
+        var unit = configrations.getString(Constants.UNITS, "")
+        viewModelProvider.getLocation(lang = lang ?: Constants.ENGLISH, unit ?: Constants.DEFAULT)
+
+        viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
+
+            val gson = Gson()
+            val json: String = gson.toJson(weatherData)
+            configrations.edit().putString("tempWethearData", json).commit()
+
+            println(weatherData.lon)
+            println(weatherData.current?.weather?.get(0)?.main)
+            addressList =
+                geoCoder.getFromLocation(weatherData.lat, weatherData.lon, 1) as ArrayList<Address>
+            if (addressList.size > 0) {
+                var address = addressList.get(0)
+
+                binding.tvCityName.text = address.countryName
+            }
+
+            var temp = Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
+
+            var format = tempFormat(
+                temp.toString(),
+                Math.ceil(weatherData.current?.wind_speed ?: 5.0).toInt().toString()
+            )
+            binding.tvTempreture.text = format.first
+            binding.tvWetharState.text = weatherData.current?.weather?.get(0)?.main
+
+            var uri =
+                "https://openweathermap.org/img/wn/${weatherData.current?.weather?.get(0)?.icon}@2x.png"
+            Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
+            binding.tvHumidity.text =
+                Math.ceil((weatherData.current?.humidity)?.toDouble() ?: 0.0).toInt().toString()
+            binding.tvPressure.text =
+                Math.ceil((weatherData.current?.pressure)?.toDouble() ?: 0.0).toInt().toString()
+            binding.tvWindSpeed.text = format.second
+
+            binding.rvHoursWeather.apply {
+                adapter = HoursWeatherDataAdapter(weatherData.hourly)
+                layoutManager =
+                    LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+            }
+
+            binding.rvDayWeather.apply {
+                adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
+                layoutManager = LinearLayoutManager(requireContext())
+            }
+
+            binding.shimmerViewContainer.hideShimmer()
+            binding.swiperefresh.isRefreshing = false
+        }
 
         handelViewPagerWithRecycleView()
     }
 
     fun getAndSetWeatherDataFromMap(lat: String, lon: String) {
-        if (configrations.getString(Constants.LANG, "").equals(Constants.ARABIC)) {
-            viewModelProvider.getWeatherDataFromApi(lat, lon, Constants.ARABIC)
-        } else {
-            viewModelProvider.getWeatherDataFromApi(lat, lon)
-        }
+        var lang = configrations.getString(Constants.LANG, "")
+        var unit = configrations.getString(Constants.UNITS, "")
+
+        viewModelProvider.getWeatherDataFromApi(
+            lat,
+            lon,
+            lang ?: Constants.ENGLISH,
+            unit ?: Constants.DEFAULT
+        )
+
 
         viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
-            addressList = geoCoder.getFromLocation(weatherData.lat,weatherData.lon,1) as ArrayList<Address>
+            val gson = Gson()
+            val json: String = gson.toJson(weatherData)
+            configrations.edit().putString("tempWethearData", json).commit()
+            addressList =
+                geoCoder.getFromLocation(weatherData.lat, weatherData.lon, 1) as ArrayList<Address>
             if (addressList.size > 0) {
                 var address = addressList.get(0)
 
@@ -191,7 +297,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             }
 
             binding.rvDayWeather.apply {
-                adapter = DaysWeatherDataAdapter(weatherData.daily,configrations)
+                adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
                 layoutManager = LinearLayoutManager(requireContext())
             }
 
@@ -308,6 +414,20 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     override fun onLowMemory() {
         super.onLowMemory()
         map.onLowMemory()
+    }
+
+    fun tempFormat(temp: String, windSpeed: String): Pair<String, String> {
+        var format = Pair("", "")
+        if (configrations.getString(Constants.UNITS, "").equals(Constants.DEFAULT)) {
+            format = Pair(temp + "°K", windSpeed + " " + getString(R.string.miles_hour))
+
+        } else if (configrations.getString(Constants.UNITS, "").equals(Constants.METRIC)) {
+            format = Pair(temp + "°C", windSpeed + " " + getString(R.string.meter_sec))
+
+        } else if (configrations.getString(Constants.UNITS, "").equals(Constants.IMPERIAL)) {
+            format = Pair(temp + "°F", windSpeed + " " + getString(R.string.miles_hour))
+        }
+        return format
     }
 
 

@@ -9,7 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/card_Color">
 
         <androidx.cardview.widget.CardView
@@ -18,14 +18,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginHorizontal="10dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="15dp"
+            android:layout_marginTop="16dp"
             app:cardBackgroundColor="#152c39"
             app:cardCornerRadius="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0">
+            app:layout_constraintTop_toTopOf="parent">
 
             <RadioGroup
                 android:id="@+id/rg_location"
@@ -42,7 +40,8 @@
                     android:gravity="center"
                     android:text="@string/location_from"
                     android:textColor="#f4fdfd"
-                    android:textSize="24sp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <RadioButton
                     android:id="@+id/rb_GPS"
@@ -52,7 +51,7 @@
                     android:checked="true"
                     android:text="GPS"
                     android:textColor="#b5c4cd"
-                    android:textSize="20sp" />
+                    android:textSize="14sp" />
 
                 <RadioButton
                     android:id="@+id/rb_chosse_location_from_map"
@@ -61,7 +60,7 @@
                     android:buttonTint="@color/city_Color"
                     android:text="@string/location"
                     android:textColor="#b5c4cd"
-                    android:textSize="20sp" />
+                    android:textSize="14sp" />
 
             </RadioGroup>
         </androidx.cardview.widget.CardView>
@@ -72,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginHorizontal="10dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             app:cardBackgroundColor="#152c39"
             app:cardCornerRadius="20dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -93,17 +92,18 @@
                     android:layout_gravity="center"
                     android:text="@string/language"
                     android:textColor="#f4fdfd"
-                    android:textSize="24sp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <RadioButton
                     android:id="@+id/rb_english"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:buttonTint="@color/city_Color"
                     android:checked="true"
                     android:text="@string/english"
                     android:textColor="#b5c4cd"
-                    android:textSize="20sp" />
+                    android:textSize="14sp" />
 
                 <RadioButton
                     android:id="@+id/rb_arabic"
@@ -112,7 +112,7 @@
                     android:buttonTint="@color/city_Color"
                     android:text="@string/arabic"
                     android:textColor="#b5c4cd"
-                    android:textSize="20sp" />
+                    android:textSize="14sp" />
 
 
             </RadioGroup>
@@ -123,8 +123,8 @@
             android:id="@+id/btn_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/button_style"
             android:text="@string/save"
             android:textSize="16sp"

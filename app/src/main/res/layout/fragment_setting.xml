@@ -35,6 +35,7 @@
                 app:cardElevation="20dp">
 
                 <RadioGroup
+                    android:id="@+id/rg_Units"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#00FFFFFF"
@@ -51,31 +52,31 @@
                         android:textSize="16sp" />
 
                     <RadioButton
-                        android:transitionName="default"
                         android:id="@+id/rb_Kelvin"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/Kelvin_meter_sec"
                         android:textColor="#b5c4cd"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:transitionName="default" />
 
                     <RadioButton
-                        android:transitionName="metric"
                         android:id="@+id/rb_Celsius"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/Celsius_meter_sec_"
                         android:textColor="#b5c4cd"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:transitionName="metric" />
 
                     <RadioButton
-                        android:transitionName="imperial"
                         android:id="@+id/rb_Fahrenheit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/Fahrenheit_miles_hour"
                         android:textColor="#b5c4cd"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:transitionName="imperial" />
 
                 </RadioGroup>
 
@@ -92,6 +93,7 @@
                 app:cardCornerRadius="20dp">
 
                 <RadioGroup
+                    android:id="@+id/rg_lang"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#00FFFFFF"
@@ -138,6 +140,7 @@
                 app:cardCornerRadius="20dp">
 
                 <RadioGroup
+                    android:id="@+id/rg_location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#00FFFFFF"

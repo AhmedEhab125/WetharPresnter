@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">WetharPresnter</string>
-    <string name="location">From Map</string>
+    <string name="app_name" translatable="false">Wethar2Day</string>
     <string name="location_from">Location From</string>
     <string name="setting">Setting</string>
     <string name="units_of_temperature">Unit of temperature</string>
@@ -11,11 +10,17 @@
     <string name="save">save</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="API_KEY">AIzaSyBdqDAJgxqzgBhD7b6jodornUgnWwiiLu0</string>
+    <string name="API_KEY" translatable="false">AIzaSyBdqDAJgxqzgBhD7b6jodornUgnWwiiLu0</string>
     <string name="today">Today</string>
     <string name="title_activity_map">Map</string>
     <string name="save_location">Save Location</string>
     <string name="Kelvin_meter_sec">Kelvin (meter/sec)</string>
     <string name="Celsius_meter_sec_">Celsius (meter/sec)</string>
     <string name="Fahrenheit_miles_hour">Fahrenheit (miles/hour)</string>
+    <string name="location">From Map</string>
+    <string name="delete">Delete</string>
+    <string name="cancle">cancle</string>
+    <string name="delete_confirmation">Do you want delete Location ?</string>
+    <string name="meter_sec">Metres/Sec</string>
+    <string name="miles_hour">miles/hour</string>
 </resources>

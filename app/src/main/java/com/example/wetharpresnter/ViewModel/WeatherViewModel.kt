@@ -11,6 +11,7 @@ import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.Location.GPSLocation
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Repo.Repository
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -24,13 +25,16 @@ class WeatherViewModel(var context: Context) : ViewModel() {
     var accessFavList: LiveData<List<WeatherData>> = favList
 
     var flag = false
+    val coroutineExceptionHandler = CoroutineExceptionHandler{_, throwable ->
+        throwable.printStackTrace()
+    }
     fun getWeatherDataFromApi(
         lat: String,
         lon: String,
         lang: String = "en",
         unit: String = Constants.DEFAULT
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO+coroutineExceptionHandler) {
             if (flag == true) {
                 adddTofavList.postValue(Repository.getWetharData(lat, lon, lang))
             }
@@ -51,7 +55,7 @@ class WeatherViewModel(var context: Context) : ViewModel() {
         flag = true
         getWeatherDataFromApi(lat, lon, lang, unit)
         adddTofavList.observe(context as LifecycleOwner) {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(Dispatchers.IO+coroutineExceptionHandler) {
                 Repository.insertFavouriteLocation(context, it)
                 Repository.getFavouriteLocations(context).collect {
                     favList.postValue(it)
@@ -63,7 +67,7 @@ class WeatherViewModel(var context: Context) : ViewModel() {
 
     fun getFavLocations() {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO+coroutineExceptionHandler) {
             Log.i("done", "getFavLocations: ")
             Repository.getFavouriteLocations(context).collect {
                 favList.postValue(it)
@@ -72,7 +76,7 @@ class WeatherViewModel(var context: Context) : ViewModel() {
     }
 
     fun deleteFromFav(weatherData: WeatherData) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO+coroutineExceptionHandler) {
             Repository.DeleteFavouriteLocation(context, weatherData)
         }
     }

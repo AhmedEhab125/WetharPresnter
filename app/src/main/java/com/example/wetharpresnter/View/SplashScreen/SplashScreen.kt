@@ -59,7 +59,7 @@ class SplashScreen : AppCompatActivity() {
 
     fun onRadioButtonClickedLang(radioGroup: RadioGroup) {
         var selected = radioGroup.checkedRadioButtonId
-
+        configrations.edit()?.putString(Constants.UNITS, Constants.DEFAULT)?.apply()
         if (selected == com.example.wetharpresnter.R.id.rb_english) {
             configrations.edit()?.putString(Constants.LANG, Constants.ENGLISH)?.apply()
 

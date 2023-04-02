@@ -10,6 +10,7 @@ class Constants
         const val LOCATION ="Location"
         const val GPS ="GPS"
         const val MAP ="MAP"
+        var mapFlag=false
 
         const val UNITS="units"
         const val IMPERIAL ="imperial"
