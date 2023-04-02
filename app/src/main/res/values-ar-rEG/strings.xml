@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">WetharPresnter</string>
+    <string name="app_name" translatable="false">Wethar2Day</string>
     <string name="location_from">المكان بواسطة</string>
     <string name="setting">الاعدادات</string>
     <string name="units_of_temperature">وحدات الحرارة</string>
@@ -15,7 +15,12 @@
     <string name="title_activity_map">الخريطة</string>
     <string name="save_location">حفظ المكان</string>
     <string name="Kelvin_meter_sec">كلفين (ميتر/الثانية)</string>
-    <string name="Celsius_meter_sec_">سليزيس (ميتر/shkdm )</string>
+    <string name="Celsius_meter_sec_">سليزيس (ميتر/الثانية)</string>
     <string name="Fahrenheit_miles_hour">فيهرينهيت (ميل/ الساعة)</string>
     <string name="location">من الخريطة</string>
+    <string name="delete">مسح</string>
+    <string name="cancle">الغاء</string>
+    <string name="delete_confirmation">هل تريد مسح المكان ؟</string>
+    <string name="meter_sec">ميتر / الثانية</string>
+    <string name="miles_hour">ميل/الساعة</string>
 </resources>

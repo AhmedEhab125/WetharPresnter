@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">WetharPresnter</string>
+    <string name="app_name" translatable="false">Wethar2Day</string>
     <string name="location_from">Location From</string>
     <string name="setting">Setting</string>
     <string name="units_of_temperature">Unit of temperature</string>
@@ -18,4 +18,9 @@
     <string name="Celsius_meter_sec_">Celsius (meter/sec)</string>
     <string name="Fahrenheit_miles_hour">Fahrenheit (miles/hour)</string>
     <string name="location">From Map</string>
+    <string name="delete">Delete</string>
+    <string name="cancle">cancle</string>
+    <string name="delete_confirmation">Do you want delete Location ?</string>
+    <string name="meter_sec">Metres/Sec</string>
+    <string name="miles_hour">miles/hour</string>
 </resources>

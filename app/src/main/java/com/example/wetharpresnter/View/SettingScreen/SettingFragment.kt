@@ -12,9 +12,12 @@ import android.view.ViewGroup
 import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
+import androidx.viewpager2.widget.ViewPager2
 import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.R
+import com.example.wetharpresnter.View.Home.HomeFragment
 import com.example.wetharpresnter.View.MainActivity.MainActivity
+import com.example.wetharpresnter.View.MainActivity.VPFragmentAdapter
 import com.example.wetharpresnter.databinding.FragmentSettingBinding
 import java.util.*
 
@@ -66,7 +69,7 @@ class SettingFragment : Fragment() {
         //location
         if (configrations.getString(Constants.LOCATION,"").equals(Constants.GPS)){
             binding.rbGPS.isChecked=true
-        }else if (configrations.getString(Constants.UNITS,"").equals(Constants.IMPERIAL)){
+        }else if (configrations.getString(Constants.LOCATION,"").equals(Constants.MAP)){
             binding.rbChosseLocationFromMap.isChecked=true
         }
 
@@ -87,7 +90,9 @@ class SettingFragment : Fragment() {
         }
         binding.rbChosseLocationFromMap.setOnClickListener {
             configrations.edit()?.putString(Constants.LOCATION, Constants.MAP)?.apply()
+            Constants.mapFlag=true
         }
+
     }
     fun selectUnit(){
         binding.rbCelsius.setOnClickListener {
@@ -106,13 +111,15 @@ class SettingFragment : Fragment() {
         Locale.setDefault(locale)
         var config = Configuration()
         config.setLocale(locale)
-
-
         context?.resources?.updateConfiguration(config,context?.resources?.displayMetrics)
-        parentFragmentManager.beginTransaction().detach(SettingFragment@this).commitNow()
+        parentFragmentManager.beginTransaction().detach(SettingFragment@this).commitNowAllowingStateLoss()
         parentFragmentManager.beginTransaction().attach(SettingFragment@this).commitNowAllowingStateLoss()
 
-     //   activity?.recreate()
+        parentFragmentManager.beginTransaction().detach(HomeFragment@this).commitNowAllowingStateLoss()
+        parentFragmentManager.beginTransaction().attach(HomeFragment@this).commitNowAllowingStateLoss()
+
+       // activity?.recreate()
+
 
         }
 
