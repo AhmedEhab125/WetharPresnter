@@ -7,17 +7,13 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Button
 import android.widget.SearchView
-import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.Constraints
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.ShowFavLocationData
-import com.example.wetharpresnter.ShowFavouriteLocationsData
 import com.example.wetharpresnter.ViewModel.ViewModelFactory
 import com.example.wetharpresnter.ViewModel.WeatherViewModel
 import com.example.wetharpresnter.databinding.FragmentFavouritBinding
@@ -206,7 +202,7 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
 
     override fun show(weatherData: WeatherData) {
    childFragmentManager.beginTransaction()
-        .replace(R.id.fragmentContainerView,ShowFavouriteLocationsData(weatherData)).addToBackStack(null).commit()
+        .replace(R.id.fragmentContainerView, ShowFavouriteLocationsData(weatherData)).addToBackStack(null).commit()
         binding.fragmentContainerView.visibility=View.VISIBLE
         binding.rvFavouritLocations.visibility=View.GONE
         binding.addLocation.visibility=View.GONE

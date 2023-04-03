@@ -13,7 +13,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
-     lateinit var vpFragmentAdapter: VPFragmentAdapter
+      lateinit var vpFragmentAdapter: VPFragmentAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val iconList= listOf(
@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
             binding.vpScreenTitles.setCurrentItem( binding.vpScreenTitles.getCurrentItem() - 1, false)
         } else {
             finish()
+
         }
     }
 

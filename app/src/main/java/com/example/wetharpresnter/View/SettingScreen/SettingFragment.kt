@@ -118,6 +118,7 @@ class SettingFragment : Fragment() {
         parentFragmentManager.beginTransaction().detach(HomeFragment@this).commitNowAllowingStateLoss()
         parentFragmentManager.beginTransaction().attach(HomeFragment@this).commitNowAllowingStateLoss()
 
+
        // activity?.recreate()
 
 

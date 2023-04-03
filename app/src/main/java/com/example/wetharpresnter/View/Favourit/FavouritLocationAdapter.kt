@@ -1,6 +1,5 @@
 package com.example.wetharpresnter.View.Favourit
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,17 +7,13 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import androidx.constraintlayout.widget.Constraints
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.ShowFavLocationData
-import com.example.wetharpresnter.ShowFavouriteLocationsData
-import com.example.wetharpresnter.View.Home.DaysWeatherDataAdapter
 import com.example.wetharpresnter.ViewModel.WeatherViewModel
 import com.example.wetharpresnter.databinding.FavouritLocationIteamBinding
-import com.example.wetharpresnter.databinding.WeatherByDayIteamBinding
 
 class FavouritLocationAdapter(
     var list: ArrayList<WeatherData>,

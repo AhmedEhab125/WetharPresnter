@@ -56,11 +56,11 @@
             app:layout_constraintVertical_bias="0.129"
             app:srcCompat="@drawable/pressure" />
 
-        <Button
+        <ImageView
             android:id="@+id/btn_delete_from_fav"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/delete"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/btn_delete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

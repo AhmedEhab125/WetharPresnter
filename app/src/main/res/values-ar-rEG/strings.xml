@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Wethar2Day</string>
     <string name="location_from">المكان بواسطة</string>
     <string name="setting">الاعدادات</string>
     <string name="units_of_temperature">وحدات الحرارة</string>
@@ -23,4 +22,5 @@
     <string name="delete_confirmation">هل تريد مسح المكان ؟</string>
     <string name="meter_sec">ميتر / الثانية</string>
     <string name="miles_hour">ميل/الساعة</string>
+    <string name="app_name">Wethear To Day</string>
 </resources>

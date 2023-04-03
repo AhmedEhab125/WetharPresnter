@@ -1,6 +1,8 @@
 package com.example.wetharpresnter.ViewModel
 
 import android.content.Context
+import android.location.Address
+import android.location.Geocoder
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -56,7 +58,10 @@ class WeatherViewModel(var context: Context) : ViewModel() {
         getWeatherDataFromApi(lat, lon, lang, unit)
         adddTofavList.observe(context as LifecycleOwner) {
             viewModelScope.launch(Dispatchers.IO+coroutineExceptionHandler) {
-                Repository.insertFavouriteLocation(context, it)
+                var tempData=it
+               tempData.timezone= countryName(it.lat,it.lon)
+
+                Repository.insertFavouriteLocation(context, tempData)
                 Repository.getFavouriteLocations(context).collect {
                     favList.postValue(it)
                     flag = false
@@ -92,6 +97,16 @@ class WeatherViewModel(var context: Context) : ViewModel() {
             }
 
         }
+    }
+    private fun countryName(lat:Double,lon: Double):String{
+        var address =""
+         var geoCoder: Geocoder = Geocoder(context)
+        var addressList = arrayListOf<Address>()
+        addressList = geoCoder.getFromLocation(lat, lon, 1) as ArrayList<Address>
+        if (addressList.size > 0) {
+             address = addressList.get(0).countryName
+        }
+        return address
     }
 
 }

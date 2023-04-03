@@ -3,6 +3,7 @@ package com.example.wetharpresnter.View.Home
 import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.icu.text.SimpleDateFormat
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
@@ -29,6 +30,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -73,37 +76,17 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             WeatherViewModel::class.java
         )
 
-
         if (NetworkListener.getConnectivity(requireContext())) {
-
 
             if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
                 getAndSetWeatherDataFromGPS()
             } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
                 dialog.show()
             }
-            binding.swiperefresh.setOnRefreshListener {
-                if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
-                    getAndSetWeatherDataFromGPS()
-                } else if (configrations.getString(Constants.LOCATION, "")
-                        .equals(Constants.MAP)
-                ) {
-                    if (addressList.size > 0) {
-                        var address = addressList.get(0)
-                        viewModelProvider.getWeatherDataFromApi(
-                            address.latitude.toString(),
-                            address.longitude.toString()
-                        )
-                    }
-
-                }
-            }
-            binding.swiperefresh.visibility = View.VISIBLE
 
             binding.shimmerViewContainer.startShimmer() // If auto-start is set to false
         } else {
-            binding.shimmerViewContainer.hideShimmer()
-            binding.swiperefresh.visibility = View.GONE
+            binding.swiperefresh.isRefreshing = false
             snakbar = Snackbar.make(
                 view.findViewById(R.id.scrol_view),
                 "No Network Connection",
@@ -112,9 +95,11 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             showTempWeatherData()
             snakbar.show()
         }
+        onRefresh()
 
 
     }
+
 
     fun showTempWeatherData() {
         if (configrations.contains("tempWethearData")) {
@@ -144,7 +129,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                 Math.ceil(weatherData.current?.wind_speed ?: 5.0).toInt().toString()
 
             binding.rvHoursWeather.apply {
-                adapter = HoursWeatherDataAdapter(weatherData.hourly)
+                adapter = HoursWeatherDataAdapter(weatherData.hourly, configrations)
                 layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
@@ -172,10 +157,10 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             getAndSetWeatherDataFromGPS()
 
         } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
-            if (Constants.mapFlag == true) {
+            if (Constants.mapFlag) {
                 dialog.show()
                 Log.i("ahmed", "onResume: truee")
-                Constants.mapFlag == false
+                Constants.mapFlag = false
 
             } else {
                 Log.i("ahmed", "onResume: false")
@@ -199,13 +184,18 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
         viewModelProvider.getLocation(lang = lang ?: Constants.ENGLISH, unit ?: Constants.DEFAULT)
 
         viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
+            var simpleDate = SimpleDateFormat("dd-M-yyyy")
+            var currentDate = simpleDate.format(weatherData.current?.dt?.times(1000L))
+            var date: Date = simpleDate.parse(currentDate)
+            println(date.toString())
+            var time = date.toString().split(" ")
+
+            binding.date.text = "${time[0]} ${time[2]} ${time[1]} ${time[5]}"
 
             val gson = Gson()
             val json: String = gson.toJson(weatherData)
             configrations.edit().putString("tempWethearData", json).commit()
 
-            println(weatherData.lon)
-            println(weatherData.current?.weather?.get(0)?.main)
             addressList =
                 geoCoder.getFromLocation(weatherData.lat, weatherData.lon, 1) as ArrayList<Address>
             if (addressList.size > 0) {
@@ -233,7 +223,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             binding.tvWindSpeed.text = format.second
 
             binding.rvHoursWeather.apply {
-                adapter = HoursWeatherDataAdapter(weatherData.hourly)
+                adapter = HoursWeatherDataAdapter(weatherData.hourly, configrations)
                 layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
@@ -276,8 +266,13 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             }
             var temp = Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
 
-            binding.tvTempreture.text = temp.toString() + "°C"
+            var format = tempFormat(
+                temp.toString(),
+                Math.ceil(weatherData.current?.wind_speed ?: 5.0).toInt().toString()
+            )
+            binding.tvTempreture.text = format.first
             binding.tvWetharState.text = weatherData.current?.weather?.get(0)?.main
+
 
             var uri =
                 "https://openweathermap.org/img/wn/${weatherData.current?.weather?.get(0)?.icon}@2x.png"
@@ -286,11 +281,10 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                 Math.ceil((weatherData.current?.humidity)?.toDouble() ?: 0.0).toInt().toString()
             binding.tvPressure.text =
                 Math.ceil((weatherData.current?.pressure)?.toDouble() ?: 0.0).toInt().toString()
-            binding.tvWindSpeed.text =
-                Math.ceil(weatherData.current?.wind_speed ?: 5.0).toInt().toString()
+            binding.tvWindSpeed.text = format.second
 
             binding.rvHoursWeather.apply {
-                adapter = HoursWeatherDataAdapter(weatherData.hourly)
+                adapter = HoursWeatherDataAdapter(weatherData.hourly, configrations)
                 layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
@@ -419,15 +413,45 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     fun tempFormat(temp: String, windSpeed: String): Pair<String, String> {
         var format = Pair("", "")
         if (configrations.getString(Constants.UNITS, "").equals(Constants.DEFAULT)) {
-            format = Pair(temp + "°K", windSpeed + " " + getString(R.string.miles_hour))
+            format = Pair(temp + "°K", windSpeed + "\n" + getString(R.string.miles_hour))
 
         } else if (configrations.getString(Constants.UNITS, "").equals(Constants.METRIC)) {
-            format = Pair(temp + "°C", windSpeed + " " + getString(R.string.meter_sec))
+            format = Pair(temp + "°C", windSpeed + "\n" + getString(R.string.meter_sec))
 
         } else if (configrations.getString(Constants.UNITS, "").equals(Constants.IMPERIAL)) {
-            format = Pair(temp + "°F", windSpeed + " " + getString(R.string.miles_hour))
+            format = Pair(temp + "°F", windSpeed + "\n" + getString(R.string.miles_hour))
         }
         return format
+    }
+
+    fun onRefresh() {
+        binding.swiperefresh.setOnRefreshListener {
+            if (NetworkListener.getConnectivity(requireContext())) {
+                if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
+                    getAndSetWeatherDataFromGPS()
+                } else if (configrations.getString(Constants.LOCATION, "")
+                        .equals(Constants.MAP)
+                ) {
+                    if (addressList.size > 0) {
+                        var address = addressList.get(0)
+                        viewModelProvider.getWeatherDataFromApi(
+                            address.latitude.toString(),
+                            address.longitude.toString()
+                        )
+                    }
+
+                }
+            } else {
+                binding.swiperefresh.isRefreshing = false
+                snakbar = Snackbar.make(
+                   binding.scrolView,
+                    "No Network Connection",
+                    Snackbar.LENGTH_LONG
+                )
+                showTempWeatherData()
+                snakbar.show()
+            }
+        }
     }
 
 

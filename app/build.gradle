@@ -36,7 +36,7 @@ android {
         viewBinding true
     }
 }
-
+var core_version = "1.6.0"
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -88,12 +88,11 @@ dependencies {
     //loading like facebook
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     // sweep refresh
-        implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     //snake bar
     implementation 'com.google.android.material:material:1.4.0'
-
-
-
+    //notification
+    implementation("androidx.core:core-ktx:$core_version")
 
 
 }

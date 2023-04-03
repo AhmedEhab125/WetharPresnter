@@ -17,6 +17,8 @@ class Constants
         const val METRIC ="metric"
         const val DEFAULT ="default"
 
+        const val CHANNEL_ID="Location Notification"
+
 
     }
 
