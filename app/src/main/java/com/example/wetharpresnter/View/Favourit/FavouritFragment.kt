@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.wetharpresnter.Models.WeatherData
+import com.example.wetharpresnter.NetworkListener
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.ShowFavLocationData
 import com.example.wetharpresnter.ViewModel.ViewModelFactory
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.snackbar.Snackbar
 
 /**
  * A simple [Fragment] subclass.
@@ -38,6 +40,8 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
     var lon: Double? = null
     lateinit var viewModelFactory: ViewModelFactory
     lateinit var viewModelProvider: WeatherViewModel
+    lateinit var snakbar: Snackbar
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,18 +57,19 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModelFactory = ViewModelFactory(requireContext())
-        viewModelProvider = ViewModelProvider(requireActivity(), viewModelFactory).get(WeatherViewModel::class.java)
+        viewModelProvider =
+            ViewModelProvider(requireActivity(), viewModelFactory).get(WeatherViewModel::class.java)
         viewModelProvider.getFavLocations()
-        var favAdapter= FavouritLocationAdapter(arrayListOf(),viewModelProvider,this)
+        var favAdapter = FavouritLocationAdapter(arrayListOf(), viewModelProvider, this)
         binding.rvFavouritLocations.apply {
-            adapter =favAdapter
+            adapter = favAdapter
             layoutManager = GridLayoutManager(requireContext(), 2)
 
         }
 
         viewModelProvider.accessFavList.observe(requireActivity()) { list ->
             favAdapter.setFavList(list as ArrayList<WeatherData>)
-            binding.swiperefresh.isRefreshing=false
+            binding.swiperefresh.isRefreshing = false
 
         }
 
@@ -80,7 +85,16 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
     }
 
     private fun showMap() {
-        dialog.show()
+        if (NetworkListener.getConnectivity(requireContext())) {
+            dialog.show()
+        } else {
+            snakbar = Snackbar.make(
+                binding.rvFavouritLocations,
+                "No Network Connection",
+                Snackbar.LENGTH_LONG
+            )
+            snakbar.show()
+        }
 
     }
 
@@ -134,10 +148,10 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
     override fun onPause() {
         super.onPause()
         map.onPause()
-        binding.fragmentContainerView.visibility=View.GONE
-        binding.rvFavouritLocations.visibility=View.VISIBLE
-        binding.addLocation.visibility=View.VISIBLE
-        binding.swiperefresh.isEnabled=true
+        binding.fragmentContainerView.visibility = View.GONE
+        binding.rvFavouritLocations.visibility = View.VISIBLE
+        binding.addLocation.visibility = View.VISIBLE
+        binding.swiperefresh.isEnabled = true
 
     }
 
@@ -191,7 +205,6 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
         })
 
 
-
     }
 
     private fun goToAddress(lat: Double, lon: Double, fl: Float) {
@@ -201,12 +214,13 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
     }
 
     override fun show(weatherData: WeatherData) {
-   childFragmentManager.beginTransaction()
-        .replace(R.id.fragmentContainerView, ShowFavouriteLocationsData(weatherData)).addToBackStack(null).commit()
-        binding.fragmentContainerView.visibility=View.VISIBLE
-        binding.rvFavouritLocations.visibility=View.GONE
-        binding.addLocation.visibility=View.GONE
-        binding.swiperefresh.isEnabled=false
+        childFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, ShowFavouriteLocationsData(weatherData))
+            .addToBackStack(null).commit()
+        binding.fragmentContainerView.visibility = View.VISIBLE
+        binding.rvFavouritLocations.visibility = View.GONE
+        binding.addLocation.visibility = View.GONE
+        binding.swiperefresh.isEnabled = false
 
 
     }

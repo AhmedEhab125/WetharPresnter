@@ -1,4 +1,4 @@
-package com.example.wetharpresnter
+package com.example.wetharpresnter.View.Alert
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -10,11 +10,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.provider.Settings.Global.getString
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat.getSystemService
+import com.example.wetharpresnter.Constants
+import com.example.wetharpresnter.R
 import com.example.wetharpresnter.View.MainActivity.MainActivity
 
 class LocationNotification(val context: Context, notificationContent: String) {

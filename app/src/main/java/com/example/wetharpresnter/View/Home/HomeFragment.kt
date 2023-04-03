@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Button
 import androidx.constraintlayout.widget.Constraints
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -75,9 +76,9 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
         viewModelProvider = ViewModelProvider(requireActivity(), viewModelFactory).get(
             WeatherViewModel::class.java
         )
-
+            binding.swiperefresh.isRefreshing=false
         if (NetworkListener.getConnectivity(requireContext())) {
-
+            binding.swiperefresh.isRefreshing=true
             if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
                 getAndSetWeatherDataFromGPS()
             } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
@@ -86,7 +87,6 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
 
             binding.shimmerViewContainer.startShimmer() // If auto-start is set to false
         } else {
-            binding.swiperefresh.isRefreshing = false
             snakbar = Snackbar.make(
                 view.findViewById(R.id.scrol_view),
                 "No Network Connection",
@@ -152,18 +152,17 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
         map.onResume()
 
         binding.swiperefresh.isRefreshing = true
-        binding.shimmerViewContainer.showShimmer(true) // If auto-start is set to false
+        binding.shimmerViewContainer.showShimmer(true)
+        binding.shimmerViewContainer.startLayoutAnimation()// If auto-start is set to false
         if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
             getAndSetWeatherDataFromGPS()
 
         } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
             if (Constants.mapFlag) {
                 dialog.show()
-                Log.i("ahmed", "onResume: truee")
                 Constants.mapFlag = false
 
             } else {
-                Log.i("ahmed", "onResume: false")
 
                 if (addressList.size > 0) {
                     addressList.get(0).latitude

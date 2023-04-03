@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -39,8 +40,9 @@ class WeatherViewModel(var context: Context) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO+coroutineExceptionHandler) {
             if (flag == true) {
                 adddTofavList.postValue(Repository.getWetharData(lat, lon, lang))
-            }
+            }else{
             list.postValue(Repository.getWetharData(lat, lon, lang, unit))
+            }
         }
     }
 
