@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 import com.example.wetharpresnter.Models.WeatherData
 
 class DataBase {
-    @Database(entities = arrayOf(WeatherData::class), version = 4)
+    @Database(entities = arrayOf(WeatherData::class), version = 7)
     @TypeConverters(TypeConverter::class)
 
     abstract class LocationDataBase : RoomDatabase() {

@@ -16,8 +16,9 @@
 
         <com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/shimmer_view_container"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,9 +38,10 @@
                     android:orientation="vertical">
 
                     <androidx.cardview.widget.CardView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginHorizontal="10dp"
                         app:cardBackgroundColor="#FFFFFF"
                         app:cardCornerRadius="20dp"
                         app:cardElevation="20dp">
@@ -48,9 +50,21 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@color/card_Color"
-                            android:paddingTop="50dp"
-                            android:paddingBottom="15dp"
+                            android:paddingVertical="10dp"
                             tools:context=".View.Home.HomeFragment">
+
+                            <TextView
+                                android:id="@+id/tv_city_name"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="#CDD5DD"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toTopOf="@+id/tv_tempreture"
+                                app:layout_constraintEnd_toStartOf="@+id/iv_Wethar_State"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/date" />
 
                             <TextView
                                 android:id="@+id/tv_tempreture"
@@ -58,23 +72,24 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="cursive"
                                 android:gravity="center"
-                                android:textColor="@color/white"
+                                android:textColor="@color/city_Color"
                                 android:textSize="30sp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="@+id/tv_city_name"
-                                app:layout_constraintTop_toBottomOf="@+id/tv_city_name"
-                                app:layout_constraintVertical_bias="0.077" />
+                                app:layout_constraintEnd_toStartOf="@+id/iv_Wethar_State"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/date"
+                                app:layout_constraintVertical_bias="0.296" />
 
                             <TextView
-                                android:id="@+id/tv_city_name"
-                                android:layout_width="150dp"
+                                android:id="@+id/date"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:textColor="@color/city_Color"
+                                android:textColor="@color/white"
                                 android:textSize="20sp"
+                                android:visibility="visible"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHorizontal_bias="0.061"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintVertical_bias="0.035" />
@@ -83,24 +98,24 @@
                                 android:id="@+id/tv_wethar_state"
                                 android:layout_width="150dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
                                 android:background="@drawable/button_style"
                                 android:gravity="center"
                                 android:textColor="@color/city_Color"
                                 android:textSize="16sp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="@+id/tv_city_name"
+                                app:layout_constraintEnd_toStartOf="@+id/iv_Wethar_State"
+                                app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/tv_tempreture"
-                                app:layout_constraintVertical_bias="0.134" />
+                                app:layout_constraintVertical_bias="0.122" />
 
                             <ImageView
                                 android:id="@+id/iv_Wethar_State"
                                 android:layout_width="200dp"
                                 android:layout_height="200dp"
-                                android:layout_marginRight="10dp"
+                                android:layout_marginTop="8dp"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintHorizontal_bias="1.0"
-                                app:layout_constraintStart_toEndOf="@+id/tv_city_name"
+                                app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 tools:src="@tools:sample/avatars" />
 
@@ -109,7 +124,7 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_marginStart="24dp"
-                                android:layout_marginTop="16dp"
+                                android:layout_marginTop="32dp"
                                 android:src="@drawable/pressure"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toStartOf="@+id/imageView3"
@@ -170,7 +185,7 @@
                                 android:id="@+id/tv_wind_speed"
                                 android:layout_width="100dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="24dp"
+                                android:layout_marginTop="16dp"
                                 android:gravity="center"
                                 android:textColor="@color/city_Color"
                                 android:textSize="16sp"

@@ -1,7 +1,10 @@
 package com.example.wetharpresnter.ViewModel
 
 import android.content.Context
+import android.location.Address
+import android.location.Geocoder
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -24,21 +27,24 @@ class WeatherViewModel(var context: Context) : ViewModel() {
     var accessList: LiveData<WeatherData> = list
     var accessFavList: LiveData<List<WeatherData>> = favList
 
+    private var updateFlag=true
     var flag = false
-    val coroutineExceptionHandler = CoroutineExceptionHandler{_, throwable ->
+    val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
     }
+
     fun getWeatherDataFromApi(
         lat: String,
         lon: String,
         lang: String = "en",
         unit: String = Constants.DEFAULT
     ) {
-        viewModelScope.launch(Dispatchers.IO+coroutineExceptionHandler) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             if (flag == true) {
                 adddTofavList.postValue(Repository.getWetharData(lat, lon, lang))
+            } else {
+                list.postValue(Repository.getWetharData(lat, lon, lang, unit))
             }
-            list.postValue(Repository.getWetharData(lat, lon, lang, unit))
         }
     }
 
@@ -55,8 +61,11 @@ class WeatherViewModel(var context: Context) : ViewModel() {
         flag = true
         getWeatherDataFromApi(lat, lon, lang, unit)
         adddTofavList.observe(context as LifecycleOwner) {
-            viewModelScope.launch(Dispatchers.IO+coroutineExceptionHandler) {
-                Repository.insertFavouriteLocation(context, it)
+            viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+                var tempData = it
+                tempData.timezone = countryName(it.lat, it.lon)
+
+                Repository.insertFavouriteLocation(context, tempData)
                 Repository.getFavouriteLocations(context).collect {
                     favList.postValue(it)
                     flag = false
@@ -67,7 +76,7 @@ class WeatherViewModel(var context: Context) : ViewModel() {
 
     fun getFavLocations() {
 
-        viewModelScope.launch(Dispatchers.IO+coroutineExceptionHandler) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             Log.i("done", "getFavLocations: ")
             Repository.getFavouriteLocations(context).collect {
                 favList.postValue(it)
@@ -76,22 +85,46 @@ class WeatherViewModel(var context: Context) : ViewModel() {
     }
 
     fun deleteFromFav(weatherData: WeatherData) {
-        viewModelScope.launch(Dispatchers.IO+coroutineExceptionHandler) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             Repository.DeleteFavouriteLocation(context, weatherData)
         }
     }
 
     fun updateDatabaseWeatherState() {
-        getFavLocations()
-        favList.observe(context as LifecycleOwner) {
-            for (data in it) {
-                var lat = data.lat
-                var lon = data.lon
-                addToFav(lat.toString(), lon.toString())
+        if(updateFlag) {
+            updateFlag=false
+            Log.i("done", "updateeeeeee: ")
+            viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
 
+                var configrations =
+                    context.getSharedPreferences("Configuration", Context.MODE_PRIVATE)!!
+
+                Repository.getFavouriteLocations(context).collect {
+                    for (data in it) {
+                        var lat = data.lat
+                        var lon = data.lon
+                        configrations.getString(Constants.LANG, "")?.let { it1 ->
+                            addToFav(
+                                lat.toString(), lon.toString(),
+                                it1
+                            )
+                        }
+                    }
+                }
             }
 
         }
+    }
+
+    private fun countryName(lat: Double, lon: Double): String {
+        var address = ""
+        var geoCoder: Geocoder = Geocoder(context)
+        var addressList = arrayListOf<Address>()
+        addressList = geoCoder.getFromLocation(lat, lon, 1) as ArrayList<Address>
+        if (addressList.size > 0) {
+            address = addressList.get(0).countryName
+        }
+        return address
     }
 
 }

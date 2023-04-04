@@ -16,6 +16,7 @@ data class WeatherData(
     var hourly: ArrayList<Hourly> = arrayListOf(),
     var daily: ArrayList<Daily> = arrayListOf(),
     var alerts: ArrayList<Alerts> = arrayListOf(),
+    var state : String=""
 
 
     ) {
@@ -30,7 +31,8 @@ data class WeatherData(
         arrayListOf(),
         arrayListOf(),
         arrayListOf(),
-        arrayListOf()
+        arrayListOf(),
+        ""
     )
 
 }
