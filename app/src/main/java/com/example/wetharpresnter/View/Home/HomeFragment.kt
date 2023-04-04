@@ -232,6 +232,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                 adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
                 layoutManager = LinearLayoutManager(requireContext())
             }
+            viewModelProvider.updateDatabaseWeatherState()
 
             binding.shimmerViewContainer.hideShimmer()
             binding.swiperefresh.isRefreshing = false
@@ -293,6 +294,8 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                 adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
                 layoutManager = LinearLayoutManager(requireContext())
             }
+            viewModelProvider.updateDatabaseWeatherState()
+
 
             binding.shimmerViewContainer.hideShimmer()
             binding.swiperefresh.isRefreshing = false

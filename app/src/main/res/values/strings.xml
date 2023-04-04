@@ -25,4 +25,7 @@
     <string name="miles_hour">miles/hour</string>
     <string name="channel_name" translatable="false">location notification</string>
     <string name="channel_description" translatable="false">Hellooooooooooooo</string>
+    <string name="notification">notification</string>
+    <string name="alert">alarm</string>
+    <string name="notification_type">Notification type</string>
 </resources>

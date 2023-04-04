@@ -59,7 +59,7 @@ class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
     }
 
     fun getWeatherData(weatherData: WeatherData) {
-        if (NetworkListener.getConnectivity(requireContext())) {
+       /* if (NetworkListener.getConnectivity(requireContext())) {
             if (configrations.getString(Constants.LANG, "").equals(Constants.ARABIC)) {
                 viewModelProvider.addToFav(
                     weatherData.lat.toString(),
@@ -80,12 +80,16 @@ class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
 
         } else {
             _setWeatherData(weatherData)
-        }
+        }*/
+        _setWeatherData(weatherData)
         binding.swiperefresh.setOnRefreshListener {
             viewModelProvider.addToFav(
                 weatherData.lat.toString(),
                 weatherData.lon.toString()
             )
+            viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
+                _setWeatherData(weatherData)
+            }
         }
     }
 

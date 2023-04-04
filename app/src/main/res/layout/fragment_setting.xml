@@ -24,6 +24,52 @@
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cvLocation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#152c39"
+                app:cardCornerRadius="20dp">
+
+                <RadioGroup
+                    android:id="@+id/rg_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/location_from"
+                        android:textColor="#f4fdfd"
+                        android:textSize="20sp" />
+
+                    <RadioButton
+                        android:id="@+id/rb_GPS"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="GPS"
+                        android:textColor="#b5c4cd"
+                        android:textSize="16sp" />
+
+                    <RadioButton
+                        android:id="@+id/rb_chosse_location_from_map"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/location"
+                        android:textColor="#b5c4cd"
+                        android:textSize="16sp" />
+
+                </RadioGroup>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
                 android:id="@+id/units_of_temperature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -130,7 +176,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cvLocation"
+                android:id="@+id/cvNotification"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -140,35 +186,35 @@
                 app:cardCornerRadius="20dp">
 
                 <RadioGroup
-                    android:id="@+id/rg_location"
+                    android:id="@+id/rg_notification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#00FFFFFF"
                     android:padding="10dp">
 
                     <TextView
-                        android:id="@+id/textView2"
+                        android:id="@+id/textView8"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="@string/location_from"
+                        android:text="@string/notification_type"
                         android:textColor="#f4fdfd"
                         android:textSize="20sp" />
 
                     <RadioButton
-                        android:id="@+id/rb_GPS"
+                        android:id="@+id/rb_notification"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="GPS"
+                        android:text="@string/notification"
                         android:textColor="#b5c4cd"
                         android:textSize="16sp" />
 
                     <RadioButton
-                        android:id="@+id/rb_chosse_location_from_map"
+                        android:id="@+id/rb_alert"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/location"
+                        android:text="@string/alert"
                         android:textColor="#b5c4cd"
                         android:textSize="16sp" />
 
