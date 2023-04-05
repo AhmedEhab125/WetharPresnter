@@ -24,6 +24,6 @@
     <string name="miles_hour">ميل/الساعة</string>
     <string name="app_name">Wethear To Day</string>
     <string name="notification">اشعارات</string>
-    <string name="alert">منبه</string>
+    <string name="alarm">منبه</string>
     <string name="notification_type">نوع التنبيه</string>
 </resources>
