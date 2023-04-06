@@ -13,10 +13,12 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.View.MainActivity.MainActivity
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 
-class AlarmRecever : BroadcastReceiver() {
+class AlarmRecever(var chanelId:String) : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        var builder = NotificationCompat.Builder(context!!, Constants.CHANNEL_ID)
+        var builder = NotificationCompat.Builder(context!!,chanelId)
             .setSmallIcon(R.drawable.sunny)
             .setContentTitle("Wethear2Day")
             .setContentText("notificationContent")
@@ -52,5 +54,12 @@ class AlarmRecever : BroadcastReceiver() {
         }
         notificationManagerCompat.notify(1,builder.build())
 
+    }
+    fun generateUniqueIntValue(a: Long, b: Long, str: String, strType:String): Int {
+        val input = "$a$b$str$strType"
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hash = digest.digest(input.toByteArray(StandardCharsets.UTF_8))
+        val truncatedHash = hash.copyOfRange(0, 4) // Truncate hash to 4 bytes
+        return truncatedHash.fold(0) { acc, byte -> (acc shl 8) + (byte.toInt() and 0xff) }
     }
 }

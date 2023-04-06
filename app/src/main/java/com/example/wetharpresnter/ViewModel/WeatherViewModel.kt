@@ -22,7 +22,6 @@ class WeatherViewModel(var context: Context) : ViewModel() {
     private var list: MutableLiveData<WeatherData> = MutableLiveData<WeatherData>()
     private var favList = MutableLiveData<List<WeatherData>>()
     private var adddTofavList: MutableLiveData<WeatherData> = MutableLiveData<WeatherData>()
-    var accessAddTofavList: LiveData<WeatherData> = adddTofavList
 
     var accessList: LiveData<WeatherData> = list
     var accessFavList: LiveData<List<WeatherData>> = favList
@@ -40,11 +39,21 @@ class WeatherViewModel(var context: Context) : ViewModel() {
         unit: String = Constants.DEFAULT
     ) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            if (flag == true) {
-                adddTofavList.postValue(Repository.getWetharData(lat, lon, lang))
-            } else {
+
                 list.postValue(Repository.getWetharData(lat, lon, lang, unit))
-            }
+
+        }
+    }
+    fun getWeatherDataFromApiForFav(
+        lat: String,
+        lon: String,
+        lang: String = "en",
+        unit: String = Constants.DEFAULT
+    ) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+
+                adddTofavList.postValue(Repository.getWetharData(lat, lon, lang))
+
         }
     }
 
@@ -58,8 +67,7 @@ class WeatherViewModel(var context: Context) : ViewModel() {
     }
 
     fun addToFav(lat: String, lon: String, lang: String = "en", unit: String = Constants.DEFAULT) {
-        flag = true
-        getWeatherDataFromApi(lat, lon, lang, unit)
+        getWeatherDataFromApiForFav(lat, lon, lang, unit)
         adddTofavList.observe(context as LifecycleOwner) {
             viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
                 var tempData = it
@@ -68,7 +76,6 @@ class WeatherViewModel(var context: Context) : ViewModel() {
                 Repository.insertFavouriteLocation(context, tempData)
                 Repository.getFavouriteLocations(context).collect {
                     favList.postValue(it)
-                    flag = false
                 }
             }
         }

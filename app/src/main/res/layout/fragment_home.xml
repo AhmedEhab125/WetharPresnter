@@ -43,7 +43,7 @@
                         android:layout_gravity="center"
                         android:layout_marginHorizontal="10dp"
                         app:cardBackgroundColor="#FFFFFF"
-                        app:cardCornerRadius="20dp"
+                        app:cardCornerRadius="50dp"
                         app:cardElevation="20dp">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
