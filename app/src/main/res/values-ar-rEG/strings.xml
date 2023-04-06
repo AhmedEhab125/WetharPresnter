@@ -26,4 +26,5 @@
     <string name="notification">اشعارات</string>
     <string name="alarm">منبه</string>
     <string name="notification_type">نوع التنبيه</string>
+    <string name="aler_cofirmation">"هال تريد حفظ  التنبيه   ؟ "</string>
 </resources>

@@ -60,7 +60,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
     lateinit var calender: Calendar
     lateinit var alarmManager: AlarmManager
     lateinit var pendingIntent: PendingIntent
-    var countryname =""
+    var countryname = "sssssssssssssssssssssssssssssss"
 
 
     override fun onCreateView(
@@ -70,7 +70,8 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
         binding = FragmentAlertBinding.inflate(inflater, container, false)
 
         dialogInit(savedInstanceState)
-        alertDialogInit()
+        alertDialog = Dialog(requireContext())
+
 
         // Inflate the layout for this fragment
         return binding.root
@@ -140,6 +141,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
             calender[Calendar.MINUTE] = timePicker.minute
             calender[Calendar.SECOND] = 0
             calender[Calendar.MILLISECOND] = 0
+            alertDialog.show()
 
 
         }
@@ -206,7 +208,8 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
                 dialog.dismiss()
                 createNotificationChanel()
                 showTimePicker()
-               countryname= countryName(lat!!, lon!!)
+                countryname =  getString(R.string.aler_cofirmation)+ "\n"+countryName(lat!!, lon!!)
+                alertDialogInit()
 
                 // viewModelProvider.addToFav(lat.toString(), lon.toString())
 
@@ -237,7 +240,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
     }
 
     fun alertDialogInit() {
-        alertDialog = Dialog(requireContext())
+
         alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         alertDialog.setContentView(R.layout.alert_dialog)
 
@@ -246,12 +249,15 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
             Constraints.LayoutParams.MATCH_PARENT,
             Constraints.LayoutParams.WRAP_CONTENT
         )
-        alertDialog.findViewById<TextView>(R.id.tv_country).text=countryname
+        window?.setBackgroundDrawableResource(android.R.color.transparent)
+        alertDialog.findViewById<TextView>(R.id.tv_country).text = countryname
         alertDialog.findViewById<Button>(R.id.btn_save_alert).setOnClickListener {
             setAlarm()
+            alertDialog.dismiss()
 
-
-
+        }
+        alertDialog.findViewById<Button>(R.id.btn_cancel_alert).setOnClickListener {
+            alertDialog.dismiss()
 
         }
 
@@ -328,6 +334,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
         var camera = CameraUpdateFactory.newLatLngZoom(latLang, fl)
         map.getMapAsync { it.animateCamera(camera) }
     }
+
     private fun countryName(lat: Double, lon: Double): String {
         var address = ""
         var geoCoder: Geocoder = Geocoder(requireContext())

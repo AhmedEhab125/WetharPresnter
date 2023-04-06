@@ -39,7 +39,7 @@ class SplashScreen : AppCompatActivity() {
             Constraints.LayoutParams.MATCH_PARENT,
             Constraints.LayoutParams.WRAP_CONTENT
         )
-        window?.setBackgroundDrawableResource(R.color.transparent);
+        window?.setBackgroundDrawableResource(R.color.transparent)
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
 
