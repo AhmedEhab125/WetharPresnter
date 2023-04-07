@@ -76,9 +76,9 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
         viewModelProvider = ViewModelProvider(requireActivity(), viewModelFactory).get(
             WeatherViewModel::class.java
         )
-            binding.swiperefresh.isRefreshing=false
+        binding.swiperefresh.isRefreshing = false
         if (NetworkListener.getConnectivity(requireContext())) {
-            binding.swiperefresh.isRefreshing=true
+            binding.swiperefresh.isRefreshing = true
             if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
                 getAndSetWeatherDataFromGPS()
             } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
@@ -354,13 +354,8 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             btnSaveLocation.setOnClickListener {
                 lat = lis.latitude
                 lon = lis.longitude
-
-
                 getAndSetWeatherDataFromMap(lat.toString(), lon.toString())
-
                 dialog.dismiss()
-
-
             }
         }
     }
@@ -446,7 +441,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             } else {
                 binding.swiperefresh.isRefreshing = false
                 snakbar = Snackbar.make(
-                   binding.scrolView,
+                    binding.scrolView,
                     "No Network Connection",
                     Snackbar.LENGTH_LONG
                 )

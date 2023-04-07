@@ -29,4 +29,6 @@
     <string name="alarm">alarm</string>
     <string name="notification_type">Alert type</string>
     <string name="aler_cofirmation">Do you want to save Alert  ? For</string>
+    <string name="From">From</string>
+    <string name="To">To</string>
 </resources>

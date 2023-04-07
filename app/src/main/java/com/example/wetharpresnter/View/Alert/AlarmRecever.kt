@@ -5,20 +5,46 @@ import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Context.WINDOW_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.PixelFormat
+import android.media.MediaPlayer
+import android.os.Build
+import android.provider.Settings
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.View.MainActivity.MainActivity
+import kotlinx.coroutines.*
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 
-class AlarmRecever(var chanelId:String) : BroadcastReceiver() {
+class AlarmRecever() : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        var builder = NotificationCompat.Builder(context!!,chanelId)
+        CoroutineScope(Dispatchers.Main).launch {
+            alarm(context!!)
+        }
+
+
+    }
+    fun generateUniqueIntValue(a: Long, b: Long, str: String, strType:String): Int {
+        val input = "$a$b$str$strType"
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hash = digest.digest(input.toByteArray(StandardCharsets.UTF_8))
+        val truncatedHash = hash.copyOfRange(0, 4) // Truncate hash to 4 bytes
+        return truncatedHash.fold(0) { acc, byte -> (acc shl 8) + (byte.toInt() and 0xff) }
+    }
+    fun generatenotification(context: Context){
+        var builder = NotificationCompat.Builder(context!!,Constants.CHANNEL_ID)
             .setSmallIcon(R.drawable.sunny)
             .setContentTitle("Wethear2Day")
             .setContentText("notificationContent")
@@ -43,23 +69,52 @@ class AlarmRecever(var chanelId:String) : BroadcastReceiver() {
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return
         }
         notificationManagerCompat.notify(1,builder.build())
+    }
 
+
+    private suspend fun alarm(context: Context) {
+        var LAYOUT_FLAG = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        else
+            WindowManager.LayoutParams.TYPE_PHONE
+
+        val mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_ALARM_ALERT_URI)
+
+        val view: View = LayoutInflater.from(context).inflate(R.layout.over_app_window, null, false)
+        view.findViewById<Button>(R.id.btn_close_alarm).setOnClickListener {
+            mediaPlayer.stop()
+            mediaPlayer.release()
+        }
+        /* val dismissBtn = view.findViewById(R.id.btnDismissAlarm) as Button
+         val textView = view.findViewById(R.id.descriptionAlarm) as TextView*/
+        val layoutParams =
+            WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                LAYOUT_FLAG,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT
+            )
+        layoutParams.gravity = Gravity.CENTER
+
+        val windowManager = context.getSystemService(WINDOW_SERVICE) as WindowManager
+
+        withContext(Dispatchers.Main) {
+            windowManager.addView(view, layoutParams)
+            view.visibility = View.VISIBLE
+            // textView.text = message
+        }
+
+        mediaPlayer.start()
+        mediaPlayer.isLooping = true
+        /* dismissBtn.setOnClickListener {
+             mediaPlayer?.release()
+             windowManager.removeView(view)
+         }
+         repository.deleteAlert(entityAlert)*/
     }
-    fun generateUniqueIntValue(a: Long, b: Long, str: String, strType:String): Int {
-        val input = "$a$b$str$strType"
-        val digest = MessageDigest.getInstance("SHA-256")
-        val hash = digest.digest(input.toByteArray(StandardCharsets.UTF_8))
-        val truncatedHash = hash.copyOfRange(0, 4) // Truncate hash to 4 bytes
-        return truncatedHash.fold(0) { acc, byte -> (acc shl 8) + (byte.toInt() and 0xff) }
-    }
+
 }

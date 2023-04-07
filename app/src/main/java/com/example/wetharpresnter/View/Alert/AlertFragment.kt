@@ -2,6 +2,7 @@ package com.example.wetharpresnter.View.Alert
 
 import android.Manifest
 import android.app.AlarmManager
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -19,17 +20,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.TextView
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.constraintlayout.widget.Constraints
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.NetworkListener
 import com.example.wetharpresnter.R
+import com.example.wetharpresnter.ViewModel.AlertViewModel.AlertViewModel
+import com.example.wetharpresnter.ViewModel.AlertViewModel.AlertViewModelFactory
 import com.example.wetharpresnter.databinding.FragmentAlertBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -40,6 +44,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_12H
+import java.text.SimpleDateFormat
 import java.util.Calendar
 
 /**
@@ -60,7 +65,10 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
     lateinit var calender: Calendar
     lateinit var alarmManager: AlarmManager
     lateinit var pendingIntent: PendingIntent
-    var countryname = "sssssssssssssssssssssssssssssss"
+    var countryname = ""
+    lateinit var viewModelFactory: AlertViewModelFactory
+    lateinit var viewModelProvider: AlertViewModel
+    var time = 1L
 
 
     override fun onCreateView(
@@ -78,10 +86,17 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         super.onViewCreated(view, savedInstanceState)
         /* var notification = LocationNotification(requireContext(),"titleeeeeeeee")
          notification.createNotificationChannel()
          */
+        viewModelFactory = AlertViewModelFactory(requireContext())
+        viewModelProvider =
+            ViewModelProvider(requireActivity(), viewModelFactory).get(AlertViewModel::class.java)
+        binding.rvAlert.apply {
+            adapter = AlertAdapter(ArrayList(), viewModelProvider)
+        }
         calender = Calendar.getInstance()
         locationSearch()
 
@@ -97,7 +112,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
 
     private fun cancleAlarm() {
         alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
-        val intent = Intent(activity, AlarmRecever("1")::class.java)
+        val intent = Intent(activity, AlarmRecever::class.java)
         pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
         alarmManager.cancel(pendingIntent)
         Toast.makeText(requireContext(), "Alarm set Sucssesfuly ", Toast.LENGTH_LONG).show()
@@ -108,43 +123,70 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
     private fun setAlarm() {
         alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
         val intent = Intent(activity, AlarmRecever::class.java)
-        pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-        alarmManager.setExact(
-            AlarmManager.RTC_WAKEUP, calender.timeInMillis, pendingIntent
+        pendingIntent = PendingIntent.getBroadcast(
+            context, 0 //id
+            , intent, 0
         )
+        alarmManager.setExact(
+            AlarmManager.RTC_WAKEUP, time, pendingIntent
+        )
+        println(time)
         Toast.makeText(requireContext(), "Alarm set Sucssesfuly ", Toast.LENGTH_LONG).show()
 
     }
 
     private fun showTimePicker() {
-        timePicker = MaterialTimePicker.Builder()
-            .setTimeFormat(CLOCK_12H)
-            .setHour(12)
-            .setMinute(0)
-            .setTitleText("Select Ararm Time")
-            .build()
-        timePicker.show(childFragmentManager, Constants.CHANNEL_ID)
-        timePicker.addOnPositiveButtonClickListener {
+        var datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfmonth ->
+            calender.set(Calendar.YEAR, year)
+            calender.set(Calendar.MONTH, month)
+            calender.set(Calendar.DAY_OF_MONTH, dayOfmonth)
+            updateDatelabel(calender)
+            timePicker = MaterialTimePicker.Builder()
+                .setTimeFormat(CLOCK_12H)
+                .setHour(12)
+                .setMinute(0)
+                .setTitleText("Select Ararm Time")
+                .build()
+            timePicker.show(childFragmentManager, Constants.CHANNEL_ID)
+            timePicker.addOnPositiveButtonClickListener {
 
-            if (timePicker.hour > 12) {
-                String.format("%02d", timePicker.hour - 12) + " : " + String.format(
-                    "%02d",
-                    timePicker.minute
-                ) + "PM"
-            } else {
-                String.format("%02d", timePicker.hour) + " : " + String.format(
-                    "%02d",
-                    timePicker.minute
-                ) + "AM"
+                /*    if (timePicker.hour > 12) {
+                        String.format("%02d", timePicker.hour - 12) + " : " + String.format(
+                            "%02d",
+                            timePicker.minute
+                        ) + "PM"
+                    } else {
+                        String.format("%02d", timePicker.hour) + " : " + String.format(
+                            "%02d",
+                            timePicker.minute
+                        ) + "AM"
+                    }*/
+                calender[Calendar.HOUR_OF_DAY] = timePicker.hour
+                calender[Calendar.MINUTE] = timePicker.minute
+                calender[Calendar.SECOND] = 0
+                calender[Calendar.MILLISECOND] = 0
+                createNotificationChanel()
+                time = calender.timeInMillis
+                //alertDialog.show()
             }
-            calender[Calendar.HOUR_OF_DAY] = timePicker.hour
-            calender[Calendar.MINUTE] = timePicker.minute
-            calender[Calendar.SECOND] = 0
-            calender[Calendar.MILLISECOND] = 0
-            alertDialog.show()
-
-
         }
+        DatePickerDialog(
+            requireContext(),
+            datePicker,
+            calender.get(Calendar.YEAR),
+            calender.get(Calendar.MONTH),
+            calender.get(Calendar.DAY_OF_MONTH)
+        ).show()
+
+
+    }
+
+    private fun updateDatelabel(calender: Calendar) {
+        val day = SimpleDateFormat("dd").format(calender.time)
+        val month = SimpleDateFormat("MM").format(calender.time)
+        val year = SimpleDateFormat("yyyy").format(calender.time)
+
+        println("$day : $month : $year")
 
     }
 
@@ -206,11 +248,11 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
 
             btnSaveLocation.setOnClickListener {
                 dialog.dismiss()
-                createNotificationChanel()
-                showTimePicker()
-                countryname =  getString(R.string.aler_cofirmation)+ "\n"+countryName(lat!!, lon!!)
+             //   showTimePicker()
+                countryname =
+                    getString(R.string.aler_cofirmation) + "\n" + countryName(lat!!, lon!!)
                 alertDialogInit()
-
+                alertDialog.show()
                 // viewModelProvider.addToFav(lat.toString(), lon.toString())
 
 
@@ -241,7 +283,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
 
     fun alertDialogInit() {
 
-        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+
         alertDialog.setContentView(R.layout.alert_dialog)
 
         val window: Window? = alertDialog.getWindow()
@@ -251,6 +293,13 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
         )
         window?.setBackgroundDrawableResource(android.R.color.transparent)
         alertDialog.findViewById<TextView>(R.id.tv_country).text = countryname
+        alertDialog.findViewById<ImageView>(R.id.iv_from_date).setOnClickListener {
+            showTimePicker()
+        }
+        alertDialog.findViewById<ImageView>(R.id.iv_to_date).setOnClickListener {
+            showTimePicker()
+        }
+
         alertDialog.findViewById<Button>(R.id.btn_save_alert).setOnClickListener {
             setAlarm()
             alertDialog.dismiss()
@@ -260,6 +309,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
             alertDialog.dismiss()
 
         }
+
 
 
     }

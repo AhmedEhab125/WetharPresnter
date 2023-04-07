@@ -57,7 +57,7 @@
             app:srcCompat="@drawable/pressure" />
 
         <ImageView
-            android:id="@+id/btn_delete_from_fav"
+            android:id="@+id/btnDeleteFromFav"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:background="@drawable/btn_delete"
