@@ -1,4 +1,4 @@
-package com.example.wetharpresnter
+package com.example.wetharpresnter.Netwoek
 
 import android.content.Context
 import android.net.ConnectivityManager

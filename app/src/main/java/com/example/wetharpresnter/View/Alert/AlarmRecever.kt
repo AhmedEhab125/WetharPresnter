@@ -1,7 +1,6 @@
 package com.example.wetharpresnter.View.Alert
 
 import android.Manifest
-import android.app.Activity
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.BroadcastReceiver
@@ -11,7 +10,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.PixelFormat
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.view.Gravity
@@ -20,10 +18,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.View.MainActivity.MainActivity
 import kotlinx.coroutines.*
@@ -33,11 +29,13 @@ import java.security.MessageDigest
 
 class AlarmRecever() : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-      var id =  intent?.getIntExtra("id",-1)
+        var id = intent?.getIntExtra("id", -1);
+        var lat = intent?.getDoubleExtra("lat", 0.0);
+        var lon = intent?.getDoubleExtra("lon", 0.0);
 
 
         CoroutineScope(Dispatchers.Main).launch {
-            generateNotification(context!!,id.toString())
+            generateNotification(context!!, id.toString(),lat ,lon)
         }
 
 
@@ -51,9 +49,9 @@ class AlarmRecever() : BroadcastReceiver() {
         return truncatedHash.fold(0) { acc, byte -> (acc shl 8) + (byte.toInt() and 0xff) }
     }
 
-    fun generateNotification(context: Context,id :String) {
+    fun generateNotification(context: Context, id: String, lat: Double?, lon: Double?) {
 
-        var builder = NotificationCompat.Builder(context!!,id)
+        var builder = NotificationCompat.Builder(context!!, id)
             .setSmallIcon(R.drawable.sunny)
             .setContentTitle("Wethear2Day")
             .setContentText("notificationContent")

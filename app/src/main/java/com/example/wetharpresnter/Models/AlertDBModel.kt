@@ -19,7 +19,7 @@ data class AlertDBModel(
 
 
 
-) {
+) :java.io.Serializable{
 
 
     constructor() : this(

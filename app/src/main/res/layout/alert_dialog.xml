@@ -74,10 +74,10 @@
             android:text="@string/save"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.243"
+            app:layout_constraintHorizontal_bias="0.25"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rg_alert"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.638" />
 
         <Button
             android:id="@+id/btn_cancel_alert"
@@ -88,10 +88,10 @@
             android:text="@string/cancle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.753"
+            app:layout_constraintHorizontal_bias="0.769"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rg_alert"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.611" />
 
         <TextView
             android:id="@+id/textView6"
@@ -101,10 +101,10 @@
             android:textColor="@color/city_Color"
             app:layout_constraintBottom_toTopOf="@+id/rg_alert"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.227"
+            app:layout_constraintHorizontal_bias="0.211"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_country"
-            app:layout_constraintVertical_bias="0.307" />
+            app:layout_constraintVertical_bias="0.067" />
 
         <TextView
             android:id="@+id/textView9"
@@ -142,5 +142,41 @@
             app:layout_constraintStart_toStartOf="@+id/textView9"
             app:layout_constraintTop_toTopOf="@+id/iv_from_date"
             app:srcCompat="@drawable/calendar" />
+
+        <TextView
+            android:id="@+id/tv_start_date_calnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="32dp"
+            android:textColor="@color/city_Color"
+            app:layout_constraintBottom_toTopOf="@+id/rg_alert"
+            app:layout_constraintEnd_toEndOf="@+id/iv_from_date"
+            app:layout_constraintStart_toStartOf="@+id/iv_from_date"
+            app:layout_constraintTop_toBottomOf="@+id/iv_from_date" />
+
+        <TextView
+            android:id="@+id/tv_end_date_caln"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="32dp"
+            android:textColor="@color/city_Color"
+            app:layout_constraintBottom_toTopOf="@+id/rg_alert"
+            app:layout_constraintEnd_toEndOf="@+id/iv_to_date"
+            app:layout_constraintStart_toStartOf="@+id/iv_to_date"
+            app:layout_constraintTop_toBottomOf="@+id/iv_to_date" />
+
+        <TextView
+            android:id="@+id/tv_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textColor="@color/design_default_color_error"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/btn_save_alert"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rg_alert" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

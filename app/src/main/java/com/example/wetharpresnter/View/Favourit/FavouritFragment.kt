@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.wetharpresnter.Models.WeatherData
-import com.example.wetharpresnter.NetworkListener
+import com.example.wetharpresnter.Netwoek.NetworkListener
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.ShowFavLocationData
 import com.example.wetharpresnter.ViewModel.FavouriteViewModel.FavouriteViewModel

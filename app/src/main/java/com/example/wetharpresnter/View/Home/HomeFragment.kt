@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide
 import com.example.wetharpresnter.*
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.ApiState
+import com.example.wetharpresnter.Netwoek.NetworkListener
 import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
 import com.example.wetharpresnter.ViewModel.HomeViewModel.HomeViewModel
 import com.example.wetharpresnter.databinding.FragmentHomeBinding
@@ -33,8 +34,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList

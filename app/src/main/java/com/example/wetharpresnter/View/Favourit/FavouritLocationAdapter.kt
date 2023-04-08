@@ -54,7 +54,7 @@ class FavouritLocationAdapter(
             Math.ceil(list.get(position).current?.temp ?: 0.0).toString()
         var uri =
             "https://openweathermap.org/img/wn/${list.get(position).current?.weather?.get(0)?.icon}@2x.png"
-        Glide.with(binding.root).load(uri).into(binding.ivLocation)
+        Glide.with(binding.root).load(uri).into(holder.binding.ivLocation)
         holder.binding.cvLocation.setOnClickListener {
             listner.show(list.get(position))
 

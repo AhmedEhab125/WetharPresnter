@@ -31,4 +31,6 @@
     <string name="aler_cofirmation">Do you want to save Alert  ? For</string>
     <string name="From">From</string>
     <string name="To">To</string>
+    <string name="time_drom">Start Date</string>
+    <string name="end_date">End Date</string>
 </resources>
