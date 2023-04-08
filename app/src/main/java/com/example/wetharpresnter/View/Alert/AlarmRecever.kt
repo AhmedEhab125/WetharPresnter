@@ -34,6 +34,8 @@ import java.security.MessageDigest
 class AlarmRecever() : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
       var id =  intent?.getIntExtra("id",-1)
+
+
         CoroutineScope(Dispatchers.Main).launch {
             generateNotification(context!!,id.toString())
         }
