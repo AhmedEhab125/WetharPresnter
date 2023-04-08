@@ -55,6 +55,7 @@ class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getWeatherData(weatherData)
+        binding.swiperefresh.isEnabled=false
 
     }
 
