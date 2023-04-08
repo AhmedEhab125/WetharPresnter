@@ -1,13 +1,13 @@
-package com.example.wetharpresnter.ViewModel
+package com.example.wetharpresnter.ViewModel.AlertViewModel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-class ViewModelFactory(var context: Context) : ViewModelProvider.Factory {
+class AlertViewModelFactory(var context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return if (modelClass.isAssignableFrom(WeatherViewModel::class.java)) {
-            WeatherViewModel(context) as T
+        return if (modelClass.isAssignableFrom(AlertViewModel::class.java)) {
+            AlertViewModel(context) as T
         } else {
             throw java.lang.IllegalArgumentException("Cant cast class ")
         }

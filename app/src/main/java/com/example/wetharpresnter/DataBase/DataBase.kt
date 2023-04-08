@@ -5,10 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.wetharpresnter.Models.AlertDBModel
 import com.example.wetharpresnter.Models.WeatherData
 
 class DataBase {
-    @Database(entities = arrayOf(WeatherData::class), version = 7)
+    @Database(entities = arrayOf(WeatherData::class,AlertDBModel::class), version = 10)
     @TypeConverters(TypeConverter::class)
 
     abstract class LocationDataBase : RoomDatabase() {

@@ -1,10 +1,8 @@
 package com.example.wetharpresnter.View.Alert
 
 import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.TaskStackBuilder
+import android.app.*
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -37,7 +35,6 @@ class LocationNotification(val context: Context, notificationContent: String) {
             setContentIntent(resultPendingIntent)
         }.setDefaults(NotificationCompat.DEFAULT_SOUND)
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-    var sound: Uri = Uri.parse("android.resource://" +context.getPackageName() + "/" + R.raw.notification_sound)
 
 
     fun createNotificationChannel() {
@@ -72,5 +69,8 @@ class LocationNotification(val context: Context, notificationContent: String) {
 
         }
     }
+
+
+
 }
 

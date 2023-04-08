@@ -12,12 +12,13 @@ import com.bumptech.glide.Glide
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.ShowFavLocationData
-import com.example.wetharpresnter.ViewModel.WeatherViewModel
+import com.example.wetharpresnter.ViewModel.FavouriteViewModel
+import com.example.wetharpresnter.ViewModel.HomeViewModel.WeatherViewModel
 import com.example.wetharpresnter.databinding.FavouritLocationIteamBinding
 
 class FavouritLocationAdapter(
     var list: ArrayList<WeatherData>,
-    var viewModelProvider: WeatherViewModel,
+    var viewModelProvider: FavouriteViewModel,
     var listner: ShowFavLocationData
 ) :
     RecyclerView.Adapter<FavouritLocationAdapter.ViewHolder>() {

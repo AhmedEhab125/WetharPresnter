@@ -6,4 +6,5 @@ sealed class ApiState {
     class Success(val date:WeatherData?) : ApiState()
     class Failure (val msg :Throwable) :ApiState()
     object Loading:ApiState()
+    class ListSuccess(val date: List<WeatherData?>) : ApiState()
 }

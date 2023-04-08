@@ -1,6 +1,7 @@
 package com.example.wetharpresnter.DataBase
 
 import androidx.room.*
+import com.example.wetharpresnter.Models.AlertDBModel
 import com.example.wetharpresnter.Models.WeatherData
 import kotlinx.coroutines.flow.Flow
 
@@ -12,6 +13,12 @@ interface IDao {
     suspend fun insertLocation(weatherData: WeatherData) :Long
     @Delete
     suspend fun deleteLocation(weatherData: WeatherData)
+    @Query("SELECT * FROM Alerts")
+    fun getAllAlerts(): Flow<List<AlertDBModel>>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAlert(alertDBModel: AlertDBModel) :Long
+    @Delete
+    suspend fun deleteaAlert(alertDBModel: AlertDBModel)
 
 
 }

@@ -15,8 +15,10 @@ import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.NetworkListener
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.ShowFavLocationData
-import com.example.wetharpresnter.ViewModel.ViewModelFactory
-import com.example.wetharpresnter.ViewModel.WeatherViewModel
+import com.example.wetharpresnter.ViewModel.FavouriteViewModel
+import com.example.wetharpresnter.ViewModel.FavouriteViewModelFactory
+import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
+import com.example.wetharpresnter.ViewModel.HomeViewModel.WeatherViewModel
 import com.example.wetharpresnter.databinding.FragmentFavouritBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -38,8 +40,8 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
     lateinit var btnSaveLocation: Button
     var lat: Double? = null
     var lon: Double? = null
-    lateinit var viewModelFactory: ViewModelFactory
-    lateinit var viewModelProvider: WeatherViewModel
+    lateinit var viewModelFactory: FavouriteViewModelFactory
+    lateinit var viewModelProvider: FavouriteViewModel
     lateinit var snakbar: Snackbar
 
 
@@ -56,9 +58,9 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModelFactory = ViewModelFactory(requireContext())
+        viewModelFactory = FavouriteViewModelFactory(requireContext())
         viewModelProvider =
-            ViewModelProvider(requireActivity(), viewModelFactory).get(WeatherViewModel::class.java)
+            ViewModelProvider(requireActivity(), viewModelFactory).get(FavouriteViewModel::class.java)
         viewModelProvider.getFavLocations()
         var favAdapter = FavouritLocationAdapter(arrayListOf(), viewModelProvider, this)
         binding.rvFavouritLocations.apply {

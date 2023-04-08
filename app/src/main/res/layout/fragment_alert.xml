@@ -8,6 +8,7 @@
     tools:context=".View.Alert.AlertFragment">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_alert"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="24dp"
@@ -18,7 +19,7 @@
         tools:listitem="@layout/alert_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_location2"
+        android:id="@+id/add_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
