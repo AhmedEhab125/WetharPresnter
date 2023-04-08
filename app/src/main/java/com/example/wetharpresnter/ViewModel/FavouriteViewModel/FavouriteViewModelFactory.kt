@@ -1,9 +1,8 @@
-package com.example.wetharpresnter.ViewModel
+package com.example.wetharpresnter.ViewModel.FavouriteViewModel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.wetharpresnter.ViewModel.HomeViewModel.WeatherViewModel
 
 
 class FavouriteViewModelFactory(var context: Context) : ViewModelProvider.Factory {

@@ -7,14 +7,18 @@ import androidx.lifecycle.*
 import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.Models.AlertDBModel
 import com.example.wetharpresnter.Models.WeatherData
+import com.example.wetharpresnter.Netwoek.ApiState
 import com.example.wetharpresnter.Repo.Repository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class AlertViewModel(var context: Context) : ViewModel() {
-    private var list: MutableLiveData<WeatherData> = MutableLiveData<WeatherData>()
-    var accessList: LiveData<WeatherData> = list
+    private var list: MutableStateFlow<ApiState> = MutableStateFlow(ApiState.Loading)
+    var accessList: StateFlow<ApiState> = list
     private var alertList = MutableLiveData<List<AlertDBModel>>()
 
     val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -29,8 +33,11 @@ class AlertViewModel(var context: Context) : ViewModel() {
     ) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
 
-            list.postValue(Repository.getWetharData(lat, lon, lang, unit))
-
+            Repository.getWetharData(lat, lon, lang, unit).catch { e ->
+                list.value = ApiState.Failure(e)
+            }.collect { data ->
+                list.value = ApiState.Success(data)
+            }
         }
     }
 

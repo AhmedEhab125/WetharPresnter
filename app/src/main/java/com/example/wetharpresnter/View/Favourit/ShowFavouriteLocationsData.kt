@@ -19,7 +19,7 @@ import com.example.wetharpresnter.R
 import com.example.wetharpresnter.View.Home.DaysWeatherDataAdapter
 import com.example.wetharpresnter.View.Home.HoursWeatherDataAdapter
 import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
-import com.example.wetharpresnter.ViewModel.HomeViewModel.WeatherViewModel
+import com.example.wetharpresnter.ViewModel.HomeViewModel.HomeViewModel
 import com.example.wetharpresnter.databinding.FragmentShowFavouritLocationsDataBinding
 import java.util.*
 import kotlin.collections.ArrayList
@@ -28,7 +28,7 @@ import kotlin.collections.ArrayList
 class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
     lateinit var binding: FragmentShowFavouritLocationsDataBinding
     lateinit var viewModelFactory: ViewModelFactory
-    lateinit var viewModelProvider: WeatherViewModel
+    lateinit var viewModelProvider: HomeViewModel
     lateinit var configrations: SharedPreferences
     lateinit var geoCoder: Geocoder
     var addressList = arrayListOf<Address>()
@@ -43,7 +43,7 @@ class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
         viewModelFactory = ViewModelFactory(requireContext())
         geoCoder = Geocoder(requireContext())
         viewModelProvider = ViewModelProvider(requireActivity(), viewModelFactory).get(
-            WeatherViewModel::class.java
+            HomeViewModel::class.java
         )
         configrations = activity?.getSharedPreferences("Configuration", Context.MODE_PRIVATE)!!
 

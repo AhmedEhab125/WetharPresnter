@@ -15,10 +15,8 @@ import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.NetworkListener
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.ShowFavLocationData
-import com.example.wetharpresnter.ViewModel.FavouriteViewModel
-import com.example.wetharpresnter.ViewModel.FavouriteViewModelFactory
-import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
-import com.example.wetharpresnter.ViewModel.HomeViewModel.WeatherViewModel
+import com.example.wetharpresnter.ViewModel.FavouriteViewModel.FavouriteViewModel
+import com.example.wetharpresnter.ViewModel.FavouriteViewModel.FavouriteViewModelFactory
 import com.example.wetharpresnter.databinding.FragmentFavouritBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap

@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.flowOf
 
 class Repository {
     companion object{
-        fun getWetharData(lat :String,lon :String ,lang: String="en",unit :String=Constants.DEFAULT): WeatherData? {
-            return  WeatherService.getWetharData(lat, lon, lang,unit)
+        fun getWetharData(lat :String,lon :String ,lang: String="en",unit :String=Constants.DEFAULT): Flow<WeatherData?> {
+            return  flowOf(WeatherService.getWetharData(lat, lon, lang,unit))
         }
          fun getFavouriteLocations(context: Context): Flow<List<WeatherData>> {
            return DataBase.LocationDataBase.getInstance(context).locations().getAllLocations()

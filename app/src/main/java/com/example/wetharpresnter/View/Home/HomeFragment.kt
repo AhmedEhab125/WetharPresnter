@@ -10,9 +10,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Button
+import android.widget.Toast
 import androidx.constraintlayout.widget.Constraints
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
@@ -20,8 +22,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.wetharpresnter.*
 import com.example.wetharpresnter.Models.WeatherData
+import com.example.wetharpresnter.Netwoek.ApiState
 import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
-import com.example.wetharpresnter.ViewModel.HomeViewModel.WeatherViewModel
+import com.example.wetharpresnter.ViewModel.HomeViewModel.HomeViewModel
 import com.example.wetharpresnter.databinding.FragmentHomeBinding
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -30,6 +33,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -47,7 +53,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     var lat: Double? = null
     var lon: Double? = null
     lateinit var viewModelFactory: ViewModelFactory
-    lateinit var viewModelProvider: WeatherViewModel
+    lateinit var viewModelProvider: HomeViewModel
     lateinit var dialog: Dialog
     lateinit var map: MapView
     lateinit var geoCoder: Geocoder
@@ -73,7 +79,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
         dialogInit(savedInstanceState)
         viewModelFactory = ViewModelFactory(requireContext())
         viewModelProvider = ViewModelProvider(requireActivity(), viewModelFactory).get(
-            WeatherViewModel::class.java
+            HomeViewModel::class.java
         )
         binding.swiperefresh.isRefreshing = false
         if (NetworkListener.getConnectivity(requireContext())) {
@@ -180,61 +186,99 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
         var lang = configrations.getString(Constants.LANG, "")
         var unit = configrations.getString(Constants.UNITS, "")
         viewModelProvider.getLocation(lang = lang ?: Constants.ENGLISH, unit ?: Constants.DEFAULT)
+        lifecycleScope.launch {
+            viewModelProvider.accessList.collect() { result ->
+                when (result) {
+                    is ApiState.Success -> {
+                        var weatherData = result.date
 
-        viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
-            var simpleDate = SimpleDateFormat("dd-M-yyyy")
-            var currentDate = simpleDate.format(weatherData.current?.dt?.times(1000L))
-            var date: Date = simpleDate.parse(currentDate)
-            println(date.toString())
-            var time = date.toString().split(" ")
+                        var simpleDate = SimpleDateFormat("dd-M-yyyy")
+                        var currentDate = simpleDate.format(weatherData?.current?.dt?.times(1000L))
+                        var date: Date = simpleDate.parse(currentDate)
+                        println(date.toString())
+                        var time = date.toString().split(" ")
 
-            binding.date.text = "${time[0]} ${time[2]} ${time[1]} ${time[5]}"
+                        binding.date.text = "${time[0]} ${time[2]} ${time[1]} ${time[5]}"
 
-            val gson = Gson()
-            val json: String = gson.toJson(weatherData)
-            configrations.edit().putString("tempWethearData", json).commit()
+                        val gson = Gson()
+                        val json: String = gson.toJson(weatherData)
+                        configrations.edit().putString("tempWethearData", json).commit()
 
-            addressList =
-                geoCoder.getFromLocation(weatherData.lat, weatherData.lon, 1) as ArrayList<Address>
-            if (addressList.size > 0) {
-                var address = addressList.get(0)
+                        if (weatherData != null) {
+                            addressList =
+                                geoCoder.getFromLocation(
+                                    weatherData.lat,
+                                    weatherData.lon,
+                                    1
+                                ) as ArrayList<Address>
+                        }
+                        if (addressList.size > 0) {
+                            var address = addressList.get(0)
 
-                binding.tvCityName.text = address.countryName
+                            binding.tvCityName.text = address.countryName
+                        }
+
+                        var temp = Math.ceil(weatherData?.current?.temp ?: 0.0).toInt()
+
+                        var format = tempFormat(
+                            temp.toString(),
+                            Math.ceil(weatherData?.current?.wind_speed ?: 5.0).toInt().toString()
+                        )
+                        binding.tvTempreture.text = format.first
+                        binding.tvWetharState.text = weatherData?.current?.weather?.get(0)?.main
+
+                        var uri =
+                            "https://openweathermap.org/img/wn/${
+                                weatherData?.current?.weather?.get(
+                                    0
+                                )?.icon
+                            }@2x.png"
+                        Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
+                        binding.tvHumidity.text =
+                            Math.ceil((weatherData?.current?.humidity)?.toDouble() ?: 0.0).toInt()
+                                .toString()
+                        binding.tvPressure.text =
+                            Math.ceil((weatherData?.current?.pressure)?.toDouble() ?: 0.0).toInt()
+                                .toString()
+                        binding.tvWindSpeed.text = format.second
+
+                        binding.rvHoursWeather.apply {
+                            if (weatherData != null) {
+                                adapter = HoursWeatherDataAdapter(weatherData.hourly, configrations)
+                            }
+                            layoutManager =
+                                LinearLayoutManager(
+                                    requireContext(),
+                                    LinearLayoutManager.HORIZONTAL,
+                                    false
+                                )
+
+                        }
+
+                        binding.rvDayWeather.apply {
+                            if (weatherData != null) {
+                                adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
+                            }
+                            layoutManager = LinearLayoutManager(requireContext())
+                        }
+                        //   viewModelProvider.updateDatabaseWeatherState()
+
+                        binding.shimmerViewContainer.hideShimmer()
+                        binding.swiperefresh.isRefreshing = false
+                    }
+                    is ApiState.Failure -> {
+                        Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show()
+                    }
+                    is ApiState.Loading -> {
+                        binding.shimmerViewContainer.showShimmer(true)
+                        binding.shimmerViewContainer.startShimmer()
+                    }
+
+                    else -> {}
+                }
+
             }
 
-            var temp = Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
-
-            var format = tempFormat(
-                temp.toString(),
-                Math.ceil(weatherData.current?.wind_speed ?: 5.0).toInt().toString()
-            )
-            binding.tvTempreture.text = format.first
-            binding.tvWetharState.text = weatherData.current?.weather?.get(0)?.main
-
-            var uri =
-                "https://openweathermap.org/img/wn/${weatherData.current?.weather?.get(0)?.icon}@2x.png"
-            Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
-            binding.tvHumidity.text =
-                Math.ceil((weatherData.current?.humidity)?.toDouble() ?: 0.0).toInt().toString()
-            binding.tvPressure.text =
-                Math.ceil((weatherData.current?.pressure)?.toDouble() ?: 0.0).toInt().toString()
-            binding.tvWindSpeed.text = format.second
-
-            binding.rvHoursWeather.apply {
-                adapter = HoursWeatherDataAdapter(weatherData.hourly, configrations)
-                layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
-            }
-
-            binding.rvDayWeather.apply {
-                adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
-                layoutManager = LinearLayoutManager(requireContext())
-            }
-         //   viewModelProvider.updateDatabaseWeatherState()
-
-            binding.shimmerViewContainer.hideShimmer()
-            binding.swiperefresh.isRefreshing = false
         }
 
         handelViewPagerWithRecycleView()
@@ -251,53 +295,89 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             unit ?: Constants.DEFAULT
         )
 
+        lifecycleScope.launch {
+            viewModelProvider.accessList.collect() { result ->
+                when (result) {
+                    is ApiState.Success -> {
+                        var weatherData = result.date
+                        val gson = Gson()
+                        val json: String = gson.toJson(weatherData)
+                        configrations.edit().putString("tempWethearData", json).commit()
+                        if (weatherData != null) {
+                            addressList =
+                                geoCoder.getFromLocation(
+                                    weatherData.lat,
+                                    weatherData.lon,
+                                    1
+                                ) as ArrayList<Address>
+                        }
+                        if (addressList.size > 0) {
+                            var address = addressList.get(0)
 
-        viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
-            val gson = Gson()
-            val json: String = gson.toJson(weatherData)
-            configrations.edit().putString("tempWethearData", json).commit()
-            addressList =
-                geoCoder.getFromLocation(weatherData.lat, weatherData.lon, 1) as ArrayList<Address>
-            if (addressList.size > 0) {
-                var address = addressList.get(0)
+                            binding.tvCityName.text = address.countryName
+                        }
+                        var temp = Math.ceil(weatherData?.current?.temp ?: 0.0).toInt()
 
-                binding.tvCityName.text = address.countryName
+                        var format = tempFormat(
+                            temp.toString(),
+                            Math.ceil(weatherData?.current?.wind_speed ?: 5.0).toInt().toString()
+                        )
+                        binding.tvTempreture.text = format.first
+                        binding.tvWetharState.text = weatherData?.current?.weather?.get(0)?.main
+
+
+                        var uri =
+                            "https://openweathermap.org/img/wn/${
+                                weatherData?.current?.weather?.get(
+                                    0
+                                )?.icon
+                            }@2x.png"
+                        Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
+                        binding.tvHumidity.text =
+                            Math.ceil((weatherData?.current?.humidity)?.toDouble() ?: 0.0).toInt()
+                                .toString()
+                        binding.tvPressure.text =
+                            Math.ceil((weatherData?.current?.pressure)?.toDouble() ?: 0.0).toInt()
+                                .toString()
+                        binding.tvWindSpeed.text = format.second
+
+                        binding.rvHoursWeather.apply {
+                            if (weatherData != null) {
+                                adapter = HoursWeatherDataAdapter(weatherData.hourly, configrations)
+                            }
+                            layoutManager =
+                                LinearLayoutManager(
+                                    requireContext(),
+                                    LinearLayoutManager.HORIZONTAL,
+                                    false
+                                )
+
+                        }
+
+                        binding.rvDayWeather.apply {
+                            if (weatherData != null) {
+                                adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
+                            }
+                            layoutManager = LinearLayoutManager(requireContext())
+                        }
+                        //  viewModelProvider.updateDatabaseWeatherState()
+
+
+                        binding.shimmerViewContainer.hideShimmer()
+                        binding.swiperefresh.isRefreshing = false
+                    }
+                    is ApiState.Failure -> {
+                        Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show()
+                    }
+                    is ApiState.Loading -> {
+                        binding.shimmerViewContainer.showShimmer(true)
+                        binding.shimmerViewContainer.startShimmer()
+                    }
+                    else -> {}
+                }
+
             }
-            var temp = Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
 
-            var format = tempFormat(
-                temp.toString(),
-                Math.ceil(weatherData.current?.wind_speed ?: 5.0).toInt().toString()
-            )
-            binding.tvTempreture.text = format.first
-            binding.tvWetharState.text = weatherData.current?.weather?.get(0)?.main
-
-
-            var uri =
-                "https://openweathermap.org/img/wn/${weatherData.current?.weather?.get(0)?.icon}@2x.png"
-            Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
-            binding.tvHumidity.text =
-                Math.ceil((weatherData.current?.humidity)?.toDouble() ?: 0.0).toInt().toString()
-            binding.tvPressure.text =
-                Math.ceil((weatherData.current?.pressure)?.toDouble() ?: 0.0).toInt().toString()
-            binding.tvWindSpeed.text = format.second
-
-            binding.rvHoursWeather.apply {
-                adapter = HoursWeatherDataAdapter(weatherData.hourly, configrations)
-                layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
-            }
-
-            binding.rvDayWeather.apply {
-                adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
-                layoutManager = LinearLayoutManager(requireContext())
-            }
-          //  viewModelProvider.updateDatabaseWeatherState()
-
-
-            binding.shimmerViewContainer.hideShimmer()
-            binding.swiperefresh.isRefreshing = false
         }
 
         handelViewPagerWithRecycleView()
