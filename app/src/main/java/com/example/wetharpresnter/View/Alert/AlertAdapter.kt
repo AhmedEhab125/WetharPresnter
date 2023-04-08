@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.ViewModel.AlertViewModel.AlertViewModel
-import com.example.wetharpresnter.ViewModel.WeatherViewModel
 import com.example.wetharpresnter.databinding.AlertItemBinding
 
 class AlertAdapter(

@@ -15,12 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.Models.WeatherData
-import com.example.wetharpresnter.NetworkListener
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.View.Home.DaysWeatherDataAdapter
 import com.example.wetharpresnter.View.Home.HoursWeatherDataAdapter
-import com.example.wetharpresnter.ViewModel.ViewModelFactory
-import com.example.wetharpresnter.ViewModel.WeatherViewModel
+import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
+import com.example.wetharpresnter.ViewModel.HomeViewModel.WeatherViewModel
 import com.example.wetharpresnter.databinding.FragmentShowFavouritLocationsDataBinding
 import java.util.*
 import kotlin.collections.ArrayList
@@ -56,6 +55,7 @@ class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getWeatherData(weatherData)
+
     }
 
     fun getWeatherData(weatherData: WeatherData) {
@@ -82,7 +82,7 @@ class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
             _setWeatherData(weatherData)
         }*/
         _setWeatherData(weatherData)
-        binding.swiperefresh.setOnRefreshListener {
+    /*    binding.swiperefresh.setOnRefreshListener {
             viewModelProvider.addToFav(
                 weatherData.lat.toString(),
                 weatherData.lon.toString()
@@ -90,7 +90,7 @@ class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
             viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
                 _setWeatherData(weatherData)
             }
-        }
+        }*/
     }
 
     fun _setWeatherData(weatherData: WeatherData) {

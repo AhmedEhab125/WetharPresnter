@@ -1,4 +1,4 @@
-package com.example.wetharpresnter.ViewModel
+package com.example.wetharpresnter.ViewModel.HomeViewModel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel

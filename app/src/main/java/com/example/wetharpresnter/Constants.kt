@@ -19,6 +19,10 @@ class Constants
 
         const val CHANNEL_ID="Location Notification"
 
+        const val NOTIFICATIONS="notification"
+        const val ALARM="alarm"
+
+
 
     }
 

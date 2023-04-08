@@ -24,7 +24,7 @@
             android:text="country"
             android:textColor="@color/white"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+            app:layout_constraintBottom_toTopOf="@+id/rg_alert"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.504"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +32,7 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <RadioGroup
-            android:id="@+id/radioGroup"
+            android:id="@+id/rg_alert"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -50,14 +50,15 @@
                 android:textSize="16sp" />
 
             <RadioButton
-                android:id="@+id/radioButton"
+                android:id="@+id/rb_alert_notification"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:checked="true"
                 android:text="@string/notification"
                 android:textColor="@color/city_Color" />
 
             <RadioButton
-                android:id="@+id/radioButton2"
+                android:id="@+id/rb_alert_alarm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/alarm"
@@ -75,7 +76,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.243"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radioGroup"
+            app:layout_constraintTop_toBottomOf="@+id/rg_alert"
             app:layout_constraintVertical_bias="0.0" />
 
         <Button
@@ -89,7 +90,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.753"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radioGroup"
+            app:layout_constraintTop_toBottomOf="@+id/rg_alert"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
@@ -98,7 +99,7 @@
             android:layout_height="wrap_content"
             android:text="@string/From"
             android:textColor="@color/city_Color"
-            app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+            app:layout_constraintBottom_toTopOf="@+id/rg_alert"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.227"
             app:layout_constraintStart_toStartOf="parent"
@@ -109,7 +110,7 @@
             android:id="@+id/textView9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/From"
+            android:text="@string/To"
             android:textColor="@color/city_Color"
             app:layout_constraintBottom_toBottomOf="@+id/textView6"
             app:layout_constraintEnd_toEndOf="parent"
@@ -124,7 +125,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="32dp"
-            app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+            app:layout_constraintBottom_toTopOf="@+id/rg_alert"
             app:layout_constraintEnd_toEndOf="@+id/textView6"
             app:layout_constraintHorizontal_bias="0.47"
             app:layout_constraintStart_toStartOf="@+id/textView6"

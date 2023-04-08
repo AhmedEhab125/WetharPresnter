@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.*
 import android.widget.Button
 import androidx.constraintlayout.widget.Constraints
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,8 +20,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.wetharpresnter.*
 import com.example.wetharpresnter.Models.WeatherData
-import com.example.wetharpresnter.ViewModel.ViewModelFactory
-import com.example.wetharpresnter.ViewModel.WeatherViewModel
+import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
+import com.example.wetharpresnter.ViewModel.HomeViewModel.WeatherViewModel
 import com.example.wetharpresnter.databinding.FragmentHomeBinding
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -232,7 +231,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                 adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
                 layoutManager = LinearLayoutManager(requireContext())
             }
-            viewModelProvider.updateDatabaseWeatherState()
+         //   viewModelProvider.updateDatabaseWeatherState()
 
             binding.shimmerViewContainer.hideShimmer()
             binding.swiperefresh.isRefreshing = false
@@ -294,7 +293,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                 adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
                 layoutManager = LinearLayoutManager(requireContext())
             }
-            viewModelProvider.updateDatabaseWeatherState()
+          //  viewModelProvider.updateDatabaseWeatherState()
 
 
             binding.shimmerViewContainer.hideShimmer()
@@ -354,8 +353,13 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             btnSaveLocation.setOnClickListener {
                 lat = lis.latitude
                 lon = lis.longitude
+
+
                 getAndSetWeatherDataFromMap(lat.toString(), lon.toString())
+
                 dialog.dismiss()
+
+
             }
         }
     }

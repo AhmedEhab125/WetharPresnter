@@ -13,14 +13,17 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.RadioButton
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
@@ -44,8 +47,12 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_12H
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.collections.ArrayList
 
 /**
  * A simple [Fragment] subclass.
@@ -69,6 +76,12 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
     lateinit var viewModelFactory: AlertViewModelFactory
     lateinit var viewModelProvider: AlertViewModel
     var time = 1L
+    var startMonth=""
+    var startDay=""
+    var endMonth=""
+    var endDay=""
+    var notificationId :Int= -1
+
 
 
     override fun onCreateView(
@@ -121,21 +134,30 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun setAlarm() {
-        alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
-        val intent = Intent(activity, AlarmRecever::class.java)
-        pendingIntent = PendingIntent.getBroadcast(
-            context, 0 //id
-            , intent, 0
-        )
-        alarmManager.setExact(
-            AlarmManager.RTC_WAKEUP, time, pendingIntent
-        )
+        var interval =(endDay.toInt()-startDay.toInt())+((endMonth.toInt()-startMonth.toInt())*30)
+        var dayMiliSecond=24*60*1000
+
+        for (i in 0..interval){
+            alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
+            val intent = Intent(activity, AlarmRecever::class.java)
+            intent.putExtra("id",notificationId)
+            println(notificationId)
+            pendingIntent = PendingIntent.getBroadcast(
+                context, notificationId+i //id
+                , intent, 0
+            )
+            alarmManager.setExact(
+                AlarmManager.RTC_WAKEUP, time+(i*dayMiliSecond), pendingIntent
+            )
+        }
+
         println(time)
         Toast.makeText(requireContext(), "Alarm set Sucssesfuly ", Toast.LENGTH_LONG).show()
 
     }
 
-    private fun showTimePicker() {
+    private fun showTimePicker(): Pair<String, Long> {
+
         var datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfmonth ->
             calender.set(Calendar.YEAR, year)
             calender.set(Calendar.MONTH, month)
@@ -148,19 +170,8 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
                 .setTitleText("Select Ararm Time")
                 .build()
             timePicker.show(childFragmentManager, Constants.CHANNEL_ID)
-            timePicker.addOnPositiveButtonClickListener {
 
-                /*    if (timePicker.hour > 12) {
-                        String.format("%02d", timePicker.hour - 12) + " : " + String.format(
-                            "%02d",
-                            timePicker.minute
-                        ) + "PM"
-                    } else {
-                        String.format("%02d", timePicker.hour) + " : " + String.format(
-                            "%02d",
-                            timePicker.minute
-                        ) + "AM"
-                    }*/
+            timePicker.addOnPositiveButtonClickListener {
                 calender[Calendar.HOUR_OF_DAY] = timePicker.hour
                 calender[Calendar.MINUTE] = timePicker.minute
                 calender[Calendar.SECOND] = 0
@@ -168,7 +179,9 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
                 createNotificationChanel()
                 time = calender.timeInMillis
                 //alertDialog.show()
+
             }
+
         }
         DatePickerDialog(
             requireContext(),
@@ -177,8 +190,10 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
             calender.get(Calendar.MONTH),
             calender.get(Calendar.DAY_OF_MONTH)
         ).show()
+        var simpleDate = android.icu.text.SimpleDateFormat("dd-M-yyyy").format(time)
 
 
+        return Pair(simpleDate.toString(), time)
     }
 
     private fun updateDatelabel(calender: Calendar) {
@@ -197,7 +212,9 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
             val name = getString(R.string.channel_name)
             val descriptionText = getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(Constants.CHANNEL_ID, name, importance).apply {
+            notificationId=generateUniqueIntValue(lat?.toLong() ?: 1L, lon?.toLong() ?: 5L,time.toString(),endMonth)
+            println(notificationId.toString()+ "  from chanel ")
+            val channel = NotificationChannel(notificationId.toString(), name, importance).apply {
                 this.enableLights(true)
                 this.enableVibration(true)
                 description = descriptionText
@@ -248,7 +265,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
 
             btnSaveLocation.setOnClickListener {
                 dialog.dismiss()
-             //   showTimePicker()
+                //   showTimePicker()
                 countryname =
                     getString(R.string.aler_cofirmation) + "\n" + countryName(lat!!, lon!!)
                 alertDialogInit()
@@ -282,6 +299,9 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
     }
 
     fun alertDialogInit() {
+        var startDate = Pair("", 0L)
+        var endDate = Pair("", 0L)
+
 
 
         alertDialog.setContentView(R.layout.alert_dialog)
@@ -294,14 +314,57 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
         window?.setBackgroundDrawableResource(android.R.color.transparent)
         alertDialog.findViewById<TextView>(R.id.tv_country).text = countryname
         alertDialog.findViewById<ImageView>(R.id.iv_from_date).setOnClickListener {
-            showTimePicker()
+            startDate = showTimePicker()
+            startMonth = startDate.first.split("-").get(1)
+            startDay= startDate.first.split("-").get(0)
+
         }
         alertDialog.findViewById<ImageView>(R.id.iv_to_date).setOnClickListener {
-            showTimePicker()
+            endDate = showTimePicker()
+            endMonth = endDate.first.split("-").get(1)
+            endDay= endDate.first.split("-").get(0)
         }
 
         alertDialog.findViewById<Button>(R.id.btn_save_alert).setOnClickListener {
+            println(generateUniqueKey().toString()+"d5aaaaaaaaaaaaaaaaaaaaaaaaaal")
+
+            if (alertDialog.findViewById<RadioButton>(R.id.rb_alert_notification).isChecked) {
+                viewModelProvider.addToAlert(
+                    lat.toString(),
+                    lon.toString(),
+                   notificationId,
+                    startDate.second,
+                    startDate.first,
+                    endDate.second,
+                    endDate.first,
+                    Constants.NOTIFICATIONS
+                )
+
+            } else {
+                if (!Settings.canDrawOverlays(context)) {
+                    val intent = Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + context?.getPackageName())
+                    )
+                    requireActivity().startActivityForResult(intent, 0)
+                }else{
+                    viewModelProvider.addToAlert(
+                        lat.toString(),
+                        lon.toString(),
+                       notificationId,
+                        startDate.second,
+                        startDate.first,
+                        endDate.second,
+                        endDate.first,
+                        Constants.ALARM
+                    )
+
+                }
+
+
+            }
             setAlarm()
+
             alertDialog.dismiss()
 
         }
@@ -311,7 +374,19 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
         }
 
 
+    }
 
+    fun generateUniqueKey(): Int {
+        var counter = AtomicInteger(0)
+        return counter.getAndIncrement()
+    }
+
+    fun generateUniqueIntValue(a: Long, b: Long, str: String, strType: String): Int {
+        val input = "$a$b$str$strType"
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hash = digest.digest(input.toByteArray(StandardCharsets.UTF_8))
+        val truncatedHash = hash.copyOfRange(0, 4) // Truncate hash to 4 bytes
+        return truncatedHash.fold(0) { acc, byte -> (acc shl 8) + (byte.toInt() and 0xff) }
     }
 
     override fun onResume() {

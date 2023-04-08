@@ -4,21 +4,15 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.util.Log
-import android.widget.Toast
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.wetharpresnter.Constants
-import com.example.wetharpresnter.Location.GPSLocation
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Repo.Repository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class WeatherViewModel(var context: Context) : ViewModel() {
+class FavouriteViewModel (var context: Context) : ViewModel() {
     private var list: MutableLiveData<WeatherData> = MutableLiveData<WeatherData>()
     private var favList = MutableLiveData<List<WeatherData>>()
     private var adddTofavList: MutableLiveData<WeatherData> = MutableLiveData<WeatherData>()
@@ -32,18 +26,7 @@ class WeatherViewModel(var context: Context) : ViewModel() {
         throwable.printStackTrace()
     }
 
-    fun getWeatherDataFromApi(
-        lat: String,
-        lon: String,
-        lang: String = "en",
-        unit: String = Constants.DEFAULT
-    ) {
-        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
 
-                list.postValue(Repository.getWetharData(lat, lon, lang, unit))
-
-        }
-    }
     fun getWeatherDataFromApiForFav(
         lat: String,
         lon: String,
@@ -52,19 +35,12 @@ class WeatherViewModel(var context: Context) : ViewModel() {
     ) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
 
-                adddTofavList.postValue(Repository.getWetharData(lat, lon, lang))
+            adddTofavList.postValue(Repository.getWetharData(lat, lon, lang))
 
         }
     }
 
-    fun getLocation(lang: String = "en", unit: String = Constants.DEFAULT) {
-        var gpsLocation = GPSLocation(context)
-        gpsLocation.getLastLocation()
-        gpsLocation.mutable.observe(context as LifecycleOwner) {
-            getWeatherDataFromApi(it.second, it.first, lang, unit)
 
-        }
-    }
 
     fun addToFav(lat: String, lon: String, lang: String = "en", unit: String = Constants.DEFAULT) {
         getWeatherDataFromApiForFav(lat, lon, lang, unit)
@@ -93,7 +69,7 @@ class WeatherViewModel(var context: Context) : ViewModel() {
 
     fun deleteFromFav(weatherData: WeatherData) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            Repository.DeleteFavouriteLocation(context, weatherData)
+            Repository.deleteFavouriteLocation(context, weatherData)
         }
     }
 
@@ -133,5 +109,4 @@ class WeatherViewModel(var context: Context) : ViewModel() {
         }
         return address
     }
-
 }
