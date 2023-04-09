@@ -50,7 +50,7 @@ class GPSLocation (var context: Context) {
 
     }
 
-    private fun checkPermission(): Boolean {
+     fun checkPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(
             context, android.Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED ||
@@ -60,7 +60,7 @@ class GPSLocation (var context: Context) {
 
     }
 
-    private fun requestPermission() {
+     fun requestPermission() {
         ActivityCompat.requestPermissions(
             context as Activity, arrayOf(
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,

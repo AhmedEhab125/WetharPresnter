@@ -2,16 +2,19 @@ package com.example.wetharpresnter.View.Home
 
 import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.content.SharedPreferences
 import android.icu.text.SimpleDateFormat
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.os.RemoteException
+import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.Constraints
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -22,9 +25,11 @@ import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.wetharpresnter.*
+import com.example.wetharpresnter.Location.GPSLocation
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.ApiState
 import com.example.wetharpresnter.Netwoek.NetworkListener
+import com.example.wetharpresnter.View.MainActivity.MainActivity
 import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
 import com.example.wetharpresnter.ViewModel.HomeViewModel.HomeViewModel
 import com.example.wetharpresnter.databinding.FragmentHomeBinding
@@ -60,6 +65,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     lateinit var geoCoder: Geocoder
     var addressList = arrayListOf<Address>()
     lateinit var snakbar: Snackbar
+    lateinit var gpsLocation: GPSLocation
 
 
     override fun onCreateView(
@@ -70,12 +76,16 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         configrations = activity?.getSharedPreferences("Configuration", MODE_PRIVATE)!!
         // Inflate the layout for this fragment
+
+
         return binding.root
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        gpsLocation = GPSLocation(requireContext())
+
         geoCoder = Geocoder(requireContext())
         dialogInit(savedInstanceState)
         viewModelFactory = ViewModelFactory(requireContext())
@@ -89,6 +99,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                 getAndSetWeatherDataFromGPS()
             } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
                 dialog.show()
+                Constants.mapFlag = false
             }
 
             binding.shimmerViewContainer.startShimmer() // If auto-start is set to false
@@ -116,21 +127,25 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                 configrations.getString("tempWethearData", ""),
                 WeatherData::class.java
             )
-            try{
-            addressList =
-                geoCoder.getFromLocation(weatherData.lat, weatherData.lon, 1) as ArrayList<Address>
-            if (addressList.size > 0) {
-                var address = addressList.get(0)
+            try {
+                addressList =
+                    geoCoder.getFromLocation(
+                        weatherData.lat,
+                        weatherData.lon,
+                        1
+                    ) as ArrayList<Address>
+                if (addressList.size > 0) {
+                    var address = addressList.get(0)
 
-                binding.tvCityName.text = address.countryName
+                    binding.tvCityName.text = address.countryName
+                }
+
+            } catch (e: IOException) {
+                binding.tvCityName.text = weatherData.timezone
+            } catch (e: RemoteException) {
+                binding.tvCityName.text = weatherData.timezone
+
             }
-
-        } catch (e: IOException) {
-                binding.tvCityName.text = weatherData.timezone
-        } catch (e: RemoteException) {
-                binding.tvCityName.text = weatherData.timezone
-
-        }
 
             var temp = Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
 
@@ -165,131 +180,162 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         map.onResume()
+        if (gpsLocation.checkPermission()) {
+            binding.shimmerViewContainer.visibility = View.VISIBLE
 
-        binding.swiperefresh.isRefreshing = true
-        binding.shimmerViewContainer.showShimmer(true)
-        binding.shimmerViewContainer.startLayoutAnimation()// If auto-start is set to false
-        if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
-            getAndSetWeatherDataFromGPS()
+            binding.cvPersmission.visibility=View.GONE
+            binding.swiperefresh.isRefreshing = true
+            binding.shimmerViewContainer.showShimmer(true)
+            binding.shimmerViewContainer.startLayoutAnimation()// If auto-start is set to false
+            if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
+                getAndSetWeatherDataFromGPS()
 
-        } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
-            if (Constants.mapFlag==true) {
-                dialog.show()
-                Constants.mapFlag = false
+            } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
+                if (Constants.mapFlag == true) {
+                    dialog.show()
+                    Constants.mapFlag = false
 
-            } else {
+                } else {
 
-                if (addressList.size > 0) {
-                    addressList.get(0).latitude
-                    viewModelProvider.getWeatherDataFromApi(
-                        addressList.get(0).latitude.toString(),
-                        addressList.get(0).longitude.toString()
-                    )
+                    if (addressList.size > 0) {
+                        addressList.get(0).latitude
+                        viewModelProvider.getWeatherDataFromApi(
+                            addressList.get(0).latitude.toString(),
+                            addressList.get(0).longitude.toString(),
+                            configrations.getString(Constants.LANG, "eng")!!,
+                            configrations.getString(Constants.UNITS, Constants.DEFAULT)!!
+                        )
+                    }
                 }
             }
+
         }
-
-
     }
 
     fun getAndSetWeatherDataFromGPS() {
-        var lang = configrations.getString(Constants.LANG, "")
-        var unit = configrations.getString(Constants.UNITS, "")
-        viewModelProvider.getLocation(lang = lang ?: Constants.ENGLISH, unit ?: Constants.DEFAULT)
-        lifecycleScope.launch {
-            viewModelProvider.accessList.collect() { result ->
-                when (result) {
-                    is ApiState.Success -> {
-                        var weatherData = result.date
+        if (gpsLocation.checkPermission()) {
 
-                        var simpleDate = SimpleDateFormat("dd-M-yyyy")
-                        var currentDate = simpleDate.format(weatherData?.current?.dt?.times(1000L))
-                        var date: Date = simpleDate.parse(currentDate)
-                        println(date.toString())
-                        var time = date.toString().split(" ")
+            var lang = configrations.getString(Constants.LANG, "")
+            var unit = configrations.getString(Constants.UNITS, "")
+            viewModelProvider.getLocation(
+                lang = lang ?: Constants.ENGLISH,
+                unit ?: Constants.DEFAULT
+            )
+            lifecycleScope.launch {
+                viewModelProvider.accessList.collect() { result ->
+                    when (result) {
+                        is ApiState.Success -> {
+                            var weatherData = result.date
 
-                        binding.date.text = "${time[0]} ${time[2]} ${time[1]} ${time[5]}"
+                            var simpleDate = SimpleDateFormat("dd-M-yyyy")
+                            var currentDate =
+                                simpleDate.format(weatherData?.current?.dt?.times(1000L))
+                            var date: Date = simpleDate.parse(currentDate)
+                            println(date.toString())
+                            var time = date.toString().split(" ")
 
-                        val gson = Gson()
-                        val json: String = gson.toJson(weatherData)
-                        configrations.edit().putString("tempWethearData", json).commit()
+                            binding.date.text = "${time[0]} ${time[2]} ${time[1]} ${time[5]}"
 
-                        if (weatherData != null) {
-                            addressList =
-                                geoCoder.getFromLocation(
-                                    weatherData.lat,
-                                    weatherData.lon,
-                                    1
-                                ) as ArrayList<Address>
-                        }
-                        if (addressList.size > 0) {
-                            var address = addressList.get(0)
+                            val gson = Gson()
+                            val json: String = gson.toJson(weatherData)
+                            configrations.edit().putString("tempWethearData", json).commit()
 
-                            binding.tvCityName.text = address.countryName
-                        }
-
-                        var temp = Math.ceil(weatherData?.current?.temp ?: 0.0).toInt()
-
-                        var format = tempFormat(
-                            temp.toString(),
-                            Math.ceil(weatherData?.current?.wind_speed ?: 5.0).toInt().toString()
-                        )
-                        binding.tvTempreture.text = format.first
-                        binding.tvWetharState.text = weatherData?.current?.weather?.get(0)?.main
-
-                        var uri =
-                            "https://openweathermap.org/img/wn/${
-                                weatherData?.current?.weather?.get(
-                                    0
-                                )?.icon
-                            }@2x.png"
-                        Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
-                        binding.tvHumidity.text =
-                            Math.ceil((weatherData?.current?.humidity)?.toDouble() ?: 0.0).toInt()
-                                .toString()
-                        binding.tvPressure.text =
-                            Math.ceil((weatherData?.current?.pressure)?.toDouble() ?: 0.0).toInt()
-                                .toString()
-                        binding.tvWindSpeed.text = format.second
-
-                        binding.rvHoursWeather.apply {
                             if (weatherData != null) {
-                                adapter = HoursWeatherDataAdapter(weatherData.hourly, configrations)
+                                addressList =
+                                    geoCoder.getFromLocation(
+                                        weatherData.lat,
+                                        weatherData.lon,
+                                        1
+                                    ) as ArrayList<Address>
                             }
-                            layoutManager =
-                                LinearLayoutManager(
-                                    requireContext(),
-                                    LinearLayoutManager.HORIZONTAL,
-                                    false
-                                )
+                            if (addressList.size > 0) {
+                                var address = addressList.get(0)
 
+                                binding.tvCityName.text = address.countryName
+                            }
+
+                            var temp = Math.ceil(weatherData?.current?.temp ?: 0.0).toInt()
+
+                            var format = tempFormat(
+                                temp.toString(),
+                                Math.ceil(weatherData?.current?.wind_speed ?: 5.0).toInt()
+                                    .toString()
+                            )
+                            binding.tvTempreture.text = format.first
+                            binding.tvWetharState.text = weatherData?.current?.weather?.get(0)?.main
+
+                            var uri =
+                                "https://openweathermap.org/img/wn/${
+                                    weatherData?.current?.weather?.get(
+                                        0
+                                    )?.icon
+                                }@2x.png"
+                            Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
+                            binding.tvHumidity.text =
+                                Math.ceil((weatherData?.current?.humidity)?.toDouble() ?: 0.0)
+                                    .toInt()
+                                    .toString()
+                            binding.tvPressure.text =
+                                Math.ceil((weatherData?.current?.pressure)?.toDouble() ?: 0.0)
+                                    .toInt()
+                                    .toString()
+                            binding.tvWindSpeed.text = format.second
+
+                            binding.rvHoursWeather.apply {
+                                if (weatherData != null) {
+                                    adapter =
+                                        HoursWeatherDataAdapter(weatherData.hourly, configrations)
+                                }
+                                layoutManager =
+                                    LinearLayoutManager(
+                                        requireContext(),
+                                        LinearLayoutManager.HORIZONTAL,
+                                        false
+                                    )
+
+                            }
+
+                            binding.rvDayWeather.apply {
+                                if (weatherData != null) {
+                                    adapter =
+                                        DaysWeatherDataAdapter(weatherData.daily, configrations)
+                                }
+                                layoutManager = LinearLayoutManager(requireContext())
+                            }
+                            //   viewModelProvider.updateDatabaseWeatherState()
+
+                            binding.shimmerViewContainer.hideShimmer()
+                            binding.swiperefresh.isRefreshing = false
+                        }
+                        is ApiState.Failure -> {
+                            Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show()
+                        }
+                        is ApiState.Loading -> {
+                            binding.shimmerViewContainer.showShimmer(true)
+                            binding.shimmerViewContainer.startShimmer()
                         }
 
-                        binding.rvDayWeather.apply {
-                            if (weatherData != null) {
-                                adapter = DaysWeatherDataAdapter(weatherData.daily, configrations)
-                            }
-                            layoutManager = LinearLayoutManager(requireContext())
-                        }
-                        //   viewModelProvider.updateDatabaseWeatherState()
-
-                        binding.shimmerViewContainer.hideShimmer()
-                        binding.swiperefresh.isRefreshing = false
-                    }
-                    is ApiState.Failure -> {
-                        Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show()
-                    }
-                    is ApiState.Loading -> {
-                        binding.shimmerViewContainer.showShimmer(true)
-                        binding.shimmerViewContainer.startShimmer()
+                        else -> {}
                     }
 
-                    else -> {}
                 }
+
+            }
+        } else {
+            binding.shimmerViewContainer.visibility = View.GONE
+            binding.cvPersmission.visibility = View.VISIBLE
+            binding.btnCheckPermission.setOnClickListener {
+
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                requireActivity().startActivity(intent)
 
             }
 
         }
+
+
+
+
 
         handelViewPagerWithRecycleView()
     }
@@ -425,10 +471,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
 
     override fun onPause() {
         super.onPause()
-        Log.i(
-            "TAG",
-            "onRadioButtonClicked: " + configrations.getString(Constants.LANG, "not found")
-        )
+
         map.onPause()
     }
 
@@ -527,7 +570,9 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                         var address = addressList.get(0)
                         viewModelProvider.getWeatherDataFromApi(
                             address.latitude.toString(),
-                            address.longitude.toString()
+                            address.longitude.toString(),
+                            configrations.getString(Constants.LANG, "en")!!,
+                            configrations.getString(Constants.UNITS, Constants.DEFAULT)!!
                         )
                     }
 

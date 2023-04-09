@@ -11,28 +11,33 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.Models.WeatherData
+import com.example.wetharpresnter.Netwoek.ApiState
+import com.example.wetharpresnter.Netwoek.NetworkListener
 import com.example.wetharpresnter.R
+import com.example.wetharpresnter.Repo.Repository
 import com.example.wetharpresnter.View.Home.DaysWeatherDataAdapter
 import com.example.wetharpresnter.View.Home.HoursWeatherDataAdapter
 import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
 import com.example.wetharpresnter.ViewModel.HomeViewModel.HomeViewModel
 import com.example.wetharpresnter.databinding.FragmentShowFavouritLocationsDataBinding
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
 
 class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
     lateinit var binding: FragmentShowFavouritLocationsDataBinding
-    lateinit var viewModelFactory: ViewModelFactory
+
     lateinit var viewModelProvider: HomeViewModel
     lateinit var configrations: SharedPreferences
     lateinit var geoCoder: Geocoder
     var addressList = arrayListOf<Address>()
-
 
 
     override fun onCreateView(
@@ -40,11 +45,10 @@ class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentShowFavouritLocationsDataBinding.inflate(inflater, container, false)
-        viewModelFactory = ViewModelFactory(requireContext())
+
         geoCoder = Geocoder(requireContext())
-        viewModelProvider = ViewModelProvider(requireActivity(), viewModelFactory).get(
-            HomeViewModel::class.java
-        )
+        viewModelProvider = HomeViewModel(requireContext(), Repository)
+
         configrations = activity?.getSharedPreferences("Configuration", Context.MODE_PRIVATE)!!
 
 
@@ -54,53 +58,104 @@ class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getWeatherData(weatherData)
-        binding.swiperefresh.isEnabled=false
+
+        if (NetworkListener.getConnectivity(requireContext())){
+            getdata()
+            binding.swiperefresh.isEnabled = true
+            binding.swiperefresh.setOnRefreshListener {
+                getdata()
+            }
+        }else{
+            binding.swiperefresh.isEnabled = false
+            getWeatherData(weatherData)
+        }
 
     }
+    fun getdata(){
+
+        viewModelProvider.getWeatherDataFromApi(
+            weatherData.lat.toString(),
+            weatherData.lon.toString(),
+            configrations.getString(Constants.LANG, "")!!,
+            configrations.getString(Constants.UNITS, "")!!
+        )
+        lifecycleScope.launch {
+            viewModelProvider.accessList.collect() { result ->
+                when (result) {
+                    is ApiState.Success -> {
+                        binding.swiperefresh.isRefreshing = false
+                        binding.shimmerViewContainer.showShimmer(false)
+                        binding.shimmerViewContainer.stopShimmer()
+                        getWeatherData(result.date!!)
+                    }
+                    is ApiState.Failure -> {
+                        var snakbar = Snackbar.make(
+                           binding.swiperefresh,
+                            "No Network Connection",
+                            Snackbar.LENGTH_LONG
+
+                        )
+                        binding.swiperefresh.isRefreshing = false
+
+                        snakbar.show()
+                    }
+                    is ApiState.Loading -> {
+                        binding.swiperefresh.isRefreshing = true
+                        binding.shimmerViewContainer.showShimmer(true)
+                        binding.shimmerViewContainer.startShimmer()
+
+                    }
+                    else -> {}
+                }
+            }
+
+
+        }
+    }
+
 
     fun getWeatherData(weatherData: WeatherData) {
-       /* if (NetworkListener.getConnectivity(requireContext())) {
-            if (configrations.getString(Constants.LANG, "").equals(Constants.ARABIC)) {
-                viewModelProvider.addToFav(
-                    weatherData.lat.toString(),
-                    weatherData.lon.toString(),
-                    Constants.ARABIC
-                )
-            } else {
+        /* if (NetworkListener.getConnectivity(requireContext())) {
+             if (configrations.getString(Constants.LANG, "").equals(Constants.ARABIC)) {
+                 viewModelProvider.addToFav(
+                     weatherData.lat.toString(),
+                     weatherData.lon.toString(),
+                     Constants.ARABIC
+                 )
+             } else {
+                 viewModelProvider.addToFav(
+                     weatherData.lat.toString(),
+                     weatherData.lon.toString()
+                 )
+             }
+
+             viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
+                 _setWeatherData(weatherData)
+             }
+
+
+         } else {
+             _setWeatherData(weatherData)
+         }*/
+        _setWeatherData(weatherData)
+        /*    binding.swiperefresh.setOnRefreshListener {
                 viewModelProvider.addToFav(
                     weatherData.lat.toString(),
                     weatherData.lon.toString()
                 )
-            }
-
-            viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
-                _setWeatherData(weatherData)
-            }
-
-
-        } else {
-            _setWeatherData(weatherData)
-        }*/
-        _setWeatherData(weatherData)
-    /*    binding.swiperefresh.setOnRefreshListener {
-            viewModelProvider.addToFav(
-                weatherData.lat.toString(),
-                weatherData.lon.toString()
-            )
-            viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
-                _setWeatherData(weatherData)
-            }
-        }*/
+                viewModelProvider.accessList.observe(requireActivity()) { weatherData ->
+                    _setWeatherData(weatherData)
+                }
+            }*/
     }
 
     fun _setWeatherData(weatherData: WeatherData) {
         var simpleDate = SimpleDateFormat("dd-M-yyyy")
-        var currentDate = simpleDate.format(weatherData.current?.dt?.times(1000L) )
+        var currentDate = simpleDate.format(weatherData.current?.dt?.times(1000L))
         var date: Date = simpleDate.parse(currentDate)
         println(date.toString())
         var time = date.toString().split(" ")
-        binding.date.text="${time[0]} ${time[2]} ${time[1]} ${time[5]}"
+        binding.date.text = "${time[0]} ${time[2]} ${time[1]} ${time[5]}"
         binding.swiperefresh.isRefreshing = false
         addressList =
             geoCoder.getFromLocation(weatherData.lat, weatherData.lon, 1) as ArrayList<Address>
@@ -128,7 +183,7 @@ class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
         binding.tvWindSpeed.text = format.second
 
         binding.rvHoursWeather.apply {
-            adapter = HoursWeatherDataAdapter(weatherData.hourly,configrations)
+            adapter = HoursWeatherDataAdapter(weatherData.hourly, configrations)
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
