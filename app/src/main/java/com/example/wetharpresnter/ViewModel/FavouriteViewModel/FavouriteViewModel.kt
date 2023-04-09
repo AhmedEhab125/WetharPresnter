@@ -9,6 +9,7 @@ import androidx.lifecycle.*
 import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.ApiState
+import com.example.wetharpresnter.Repo.IRepo
 import com.example.wetharpresnter.Repo.Repository
 import com.google.android.gms.common.internal.Objects.ToStringHelper
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class FavouriteViewModel (var context: Context) : ViewModel() {
+class FavouriteViewModel (var context: Context,var iRepo: IRepo) : ViewModel() {
     private var list: MutableStateFlow<ApiState> = MutableStateFlow(ApiState.Loading)
     var accessList: StateFlow<ApiState> = list
 
@@ -47,7 +48,7 @@ class FavouriteViewModel (var context: Context) : ViewModel() {
                 if (data != null) {
                     var temp =data
                     temp.timezone=countryName(data.lat, data.lon)
-                    Repository.insertFavouriteLocation(context,temp)
+                    iRepo.insertFavouriteLocation(context,temp)
                 }
             }
 
@@ -89,7 +90,7 @@ class FavouriteViewModel (var context: Context) : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             Log.i("done", "getFavLocations: ")
-            Repository.getFavouriteLocations(context).collect {
+            iRepo.getFavouriteLocations(context).collect {
                 favList.postValue(it)
             }
         }
@@ -97,7 +98,7 @@ class FavouriteViewModel (var context: Context) : ViewModel() {
 
     fun deleteFromFav(weatherData: WeatherData) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            Repository.deleteFavouriteLocation(context, weatherData)
+            iRepo.deleteFavouriteLocation(context, weatherData)
         }
     }
 
@@ -110,7 +111,7 @@ class FavouriteViewModel (var context: Context) : ViewModel() {
                 var configrations =
                     context.getSharedPreferences("Configuration", Context.MODE_PRIVATE)!!
 
-                Repository.getFavouriteLocations(context).collect {
+                iRepo.getFavouriteLocations(context).collect {
                     for (data in it) {
                         var lat = data.lat
                         var lon = data.lon

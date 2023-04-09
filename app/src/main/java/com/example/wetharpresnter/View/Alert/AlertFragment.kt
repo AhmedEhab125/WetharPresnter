@@ -28,6 +28,7 @@ import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.Models.AlertDBModel
 import com.example.wetharpresnter.Netwoek.NetworkListener
 import com.example.wetharpresnter.R
+import com.example.wetharpresnter.ViewModel.AlertViewModel.AlarmRecever
 import com.example.wetharpresnter.ViewModel.AlertViewModel.AlertViewModel
 import com.example.wetharpresnter.ViewModel.AlertViewModel.AlertViewModelFactory
 import com.example.wetharpresnter.databinding.FragmentAlertBinding
@@ -138,7 +139,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
                 intent.putExtra("lon",lon)
                 intent.putExtra("state",state)
 
-                println(notificationId)
+                println(notificationId.toString() +"frooooom set alarm ")
                 pendingIntent = PendingIntent.getBroadcast(
                     context, notificationId + i //id
                     , intent, 0
@@ -397,7 +398,6 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
                     requireActivity().startActivityForResult(intent, 0)
                 } else {
                     state=Constants.ALARM
-
                     viewModelProvider.addToAlert(
                         lat.toString(),
                         lon.toString(),

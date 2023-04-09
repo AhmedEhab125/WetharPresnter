@@ -7,6 +7,7 @@ import android.icu.text.SimpleDateFormat
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.os.RemoteException
 import android.util.Log
 import android.view.*
 import android.widget.Button
@@ -35,6 +36,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -107,11 +109,14 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
 
     fun showTempWeatherData() {
         if (configrations.contains("tempWethearData")) {
+            binding.shimmerViewContainer.hideShimmer()
+            binding.swiperefresh.isRefreshing = false
             var gson = Gson()
             var weatherData: WeatherData = gson.fromJson(
                 configrations.getString("tempWethearData", ""),
                 WeatherData::class.java
             )
+            try{
             addressList =
                 geoCoder.getFromLocation(weatherData.lat, weatherData.lon, 1) as ArrayList<Address>
             if (addressList.size > 0) {
@@ -119,6 +124,13 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
 
                 binding.tvCityName.text = address.countryName
             }
+
+        } catch (e: IOException) {
+                binding.tvCityName.text = weatherData.timezone
+        } catch (e: RemoteException) {
+                binding.tvCityName.text = weatherData.timezone
+
+        }
 
             var temp = Math.ceil(weatherData.current?.temp ?: 0.0).toInt()
 
@@ -144,8 +156,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                 layoutManager = LinearLayoutManager(requireContext())
             }
 
-            binding.shimmerViewContainer.hideShimmer()
-            binding.swiperefresh.isRefreshing = false
+
         }
         handelViewPagerWithRecycleView()
     }

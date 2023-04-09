@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.NetworkListener
 import com.example.wetharpresnter.R
+import com.example.wetharpresnter.Repo.Repository
 import com.example.wetharpresnter.ShowFavLocationData
 import com.example.wetharpresnter.ViewModel.FavouriteViewModel.FavouriteViewModel
 import com.example.wetharpresnter.ViewModel.FavouriteViewModel.FavouriteViewModelFactory
@@ -56,7 +57,7 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModelFactory = FavouriteViewModelFactory(requireContext())
+        viewModelFactory = FavouriteViewModelFactory(requireContext(),Repository)
         viewModelProvider =
             ViewModelProvider(requireActivity(), viewModelFactory).get(FavouriteViewModel::class.java)
         viewModelProvider.getFavLocations()

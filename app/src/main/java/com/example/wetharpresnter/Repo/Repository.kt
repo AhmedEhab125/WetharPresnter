@@ -10,26 +10,26 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 class Repository {
-    companion object{
-        fun getWetharData(lat :String,lon :String ,lang: String="en",unit :String=Constants.DEFAULT): Flow<WeatherData?> {
+    companion object : IRepo {
+        override fun getWetharData(lat :String, lon :String, lang: String, unit :String): Flow<WeatherData?> {
             return  flowOf(WeatherService.getWetharData(lat, lon, lang,unit))
         }
-         fun getFavouriteLocations(context: Context): Flow<List<WeatherData>> {
+         override fun getFavouriteLocations(context: Context): Flow<List<WeatherData>> {
            return DataBase.LocationDataBase.getInstance(context).locations().getAllLocations()
         }
-        suspend fun insertFavouriteLocation(context: Context, weatherData: WeatherData){
+        override suspend fun insertFavouriteLocation(context: Context, weatherData: WeatherData){
             DataBase.LocationDataBase.getInstance(context).locations().insertLocation(weatherData)
         }
-        suspend fun deleteFavouriteLocation(context: Context, weatherData: WeatherData){
+        override suspend fun deleteFavouriteLocation(context: Context, weatherData: WeatherData){
             DataBase.LocationDataBase.getInstance(context).locations().deleteLocation(weatherData)
         }
-        suspend fun  getAlerts(context: Context): Flow<List<AlertDBModel>>{
+        override suspend fun  getAlerts(context: Context): Flow<List<AlertDBModel>>{
             return DataBase.LocationDataBase.getInstance(context).locations().getAllAlerts()
         }
-        suspend fun insertAlert(context: Context, alertDBModel: AlertDBModel){
+        override suspend fun insertAlert(context: Context, alertDBModel: AlertDBModel){
             DataBase.LocationDataBase.getInstance(context).locations().insertAlert(alertDBModel)
         }
-        suspend fun deleteAlert(context: Context, alertDBModel: AlertDBModel){
+        override suspend fun deleteAlert(context: Context, alertDBModel: AlertDBModel){
             DataBase.LocationDataBase.getInstance(context).locations().deleteaAlert(alertDBModel)
         }
     }

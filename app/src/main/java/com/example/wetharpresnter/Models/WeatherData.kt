@@ -33,6 +33,8 @@ data class WeatherData(
         arrayListOf()
     )
 
+    constructor(d: Double, d1: Double) : this()
+
 }
 
 
