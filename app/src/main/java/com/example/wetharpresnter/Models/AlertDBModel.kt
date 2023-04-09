@@ -33,5 +33,16 @@ data class AlertDBModel(
         ""
 
     )
+    constructor(id :Int) : this(
+        id,
+        0.0,
+        0.0,
+        1L,
+        "",
+        1L,
+        "",
+        ""
+
+    )
 
 }

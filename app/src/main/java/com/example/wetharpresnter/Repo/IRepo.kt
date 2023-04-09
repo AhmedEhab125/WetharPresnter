@@ -21,4 +21,5 @@ interface IRepo {
     suspend fun getAlerts(context: Context): Flow<List<AlertDBModel>>
     suspend fun insertAlert(context: Context, alertDBModel: AlertDBModel)
     suspend fun deleteAlert(context: Context, alertDBModel: AlertDBModel)
+    suspend fun deleteAlertById(context: Context, id:Int)
 }

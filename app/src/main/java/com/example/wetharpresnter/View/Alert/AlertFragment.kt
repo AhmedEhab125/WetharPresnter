@@ -77,7 +77,10 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
     var notificationId: Int = -1
 
     var calnderFlag = true
-    var state =""
+    var state = ""
+    var endDate = ""
+    var timeFlag = false
+    var startTime = 1L
 
 
     override fun onCreateView(
@@ -130,22 +133,25 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
             var interval =
                 (endDay.toInt() - startDay.toInt()) + ((endMonth.toInt() - startMonth.toInt()) * 30)
             var dayMiliSecond = 24 * 60 * 1000
+            endDate = alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString()
 
             for (i in 0..interval) {
                 alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
                 val intent = Intent(activity, AlarmRecever::class.java)
                 intent.putExtra("id", notificationId)
-                intent.putExtra("lat",lat)
-                intent.putExtra("lon",lon)
-                intent.putExtra("state",state)
+                intent.putExtra("lat", lat)
+                intent.putExtra("lon", lon)
+                intent.putExtra("state", state)
+                intent.putExtra("endDate", endDate)
 
-                println(notificationId.toString() +"frooooom set alarm ")
+
+
                 pendingIntent = PendingIntent.getBroadcast(
                     context, notificationId + i //id
                     , intent, 0
                 )
                 alarmManager.setExact(
-                    AlarmManager.RTC_WAKEUP, time + (i * dayMiliSecond), pendingIntent
+                    AlarmManager.RTC_WAKEUP, startTime + (i * dayMiliSecond), pendingIntent
                 )
             }
 
@@ -230,8 +236,11 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
 
 
         }
+        if (calnderFlag) {
+            startTime = calender.timeInMillis
+        }
 
-        time = calender.timeInMillis
+
 
 
         println("$day : $month : $year")
@@ -374,54 +383,72 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
 
         alertDialog.findViewById<Button>(R.id.btn_save_alert).setOnClickListener {
             val curentTime = System.currentTimeMillis();
-            //  if (endDate.second > startDate.second && curentTime<startDate.second) {
+            beginDate = alertDialog.findViewById<TextView>(R.id.tv_start_date_calnd).text.toString()
+            finshDate = alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString()
+            if (!beginDate.isEmpty() && !finshDate.isEmpty()) {
+                val sdf = SimpleDateFormat("dd-M-yyyy")
+                var date = sdf.parse(beginDate)
 
-            if (alertDialog.findViewById<RadioButton>(R.id.rb_alert_notification).isChecked) {
-                state=Constants.NOTIFICATIONS
-                viewModelProvider.addToAlert(
-                    lat.toString(),
-                    lon.toString(),
-                    notificationId,
-                    startDate.second,
-                    alertDialog.findViewById<TextView>(R.id.tv_start_date_calnd).text.toString(),
-                    endDate.second,
-                    alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString(),
-                    Constants.NOTIFICATIONS
-                )
+                val cal = Calendar.getInstance()
+                cal.time = date
+                val startMillis = cal.timeInMillis
+                date = sdf.parse(finshDate)
+                cal.time = date
+                val endtMillis = cal.timeInMillis
+                println(curentTime.toString() + " "+ startMillis)
 
-            } else {
-                if (!Settings.canDrawOverlays(context)) {
-                    val intent = Intent(
-                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + context?.getPackageName())
-                    )
-                    requireActivity().startActivityForResult(intent, 0)
+                if (endtMillis >= startMillis&&curentTime<=startMillis+1000000000) {
+
+                    if (alertDialog.findViewById<RadioButton>(R.id.rb_alert_notification).isChecked) {
+                        state = Constants.NOTIFICATIONS
+                        viewModelProvider.addToAlert(
+                            lat.toString(),
+                            lon.toString(),
+                            notificationId,
+                            startDate.second,
+                            alertDialog.findViewById<TextView>(R.id.tv_start_date_calnd).text.toString(),
+                            endDate.second,
+                            alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString(),
+                            Constants.NOTIFICATIONS
+                        )
+
+                    } else {
+                        if (!Settings.canDrawOverlays(context)) {
+                            val intent = Intent(
+                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + context?.getPackageName())
+                            )
+                            requireActivity().startActivityForResult(intent, 0)
+                        } else {
+                            state = Constants.ALARM
+                            viewModelProvider.addToAlert(
+                                lat.toString(),
+                                lon.toString(),
+                                notificationId,
+                                startDate.second,
+                                alertDialog.findViewById<TextView>(R.id.tv_start_date_calnd).text.toString(),
+                                endDate.second,
+                                alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString(),
+                                Constants.ALARM
+                            )
+
+                        }
+
+
+                    }
+                    setAlarm()
+                    alertDialog.dismiss()
                 } else {
-                    state=Constants.ALARM
-                    viewModelProvider.addToAlert(
-                        lat.toString(),
-                        lon.toString(),
-                        notificationId,
-                        startDate.second,
-                        alertDialog.findViewById<TextView>(R.id.tv_start_date_calnd).text.toString(),
-                        endDate.second,
-                        alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString(),
-                        Constants.ALARM
-                    )
+                    alertDialog.findViewById<TextView>(R.id.tv_error).visibility = View.VISIBLE
+                    alertDialog.findViewById<TextView>(R.id.tv_error).text = "Invalid Date Input"
 
                 }
-
-
-            }
-            setAlarm()
-            alertDialog.dismiss()
-        } /*else {
-                alertDialog.findViewById<TextView>(R.id.tv_error).visibility=View.VISIBLE
-                alertDialog.findViewById<TextView>(R.id.tv_error).text="Invalid Date Input"
-
+            }else{
+                alertDialog.findViewById<TextView>(R.id.tv_error).visibility = View.VISIBLE
+                alertDialog.findViewById<TextView>(R.id.tv_error).text = "Entre start and end dates"
             }
 
-        }*/
+        }
         alertDialog.findViewById<Button>(R.id.btn_cancel_alert).setOnClickListener {
             alertDialog.dismiss()
         }

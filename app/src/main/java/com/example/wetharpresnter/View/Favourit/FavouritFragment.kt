@@ -61,6 +61,7 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
         viewModelProvider =
             ViewModelProvider(requireActivity(), viewModelFactory).get(FavouriteViewModel::class.java)
         viewModelProvider.getFavLocations()
+        viewModelProvider.updateDatabaseWeatherState()
         var favAdapter = FavouritLocationAdapter(arrayListOf(), viewModelProvider, this)
         binding.rvFavouritLocations.apply {
             adapter = favAdapter

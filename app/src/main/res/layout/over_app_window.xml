@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/card_Color">
+        android:background="#A0AFB6">
 
         <TextView
             android:id="@+id/tv_alarm_discription"
@@ -20,7 +20,7 @@
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
             android:text="Discription"
-            android:textColor="@color/city_Color"
+            android:textColor="@color/design_default_color_on_secondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

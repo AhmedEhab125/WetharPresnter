@@ -110,6 +110,12 @@ class AlertViewModel(var context: Context,var iRepo: IRepo) : ViewModel() {
             cancleAlarm(alertDBModel.ID, alertDBModel)
         }
     }
+    fun deleteAlertByID(id: Int) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            iRepo.deleteAlertById(context, id)
+
+        }
+    }
 
     private fun cancleAlarm(alertId: Int, alertDBModel: AlertDBModel) {
         var startDate = alertDBModel.fromDate
