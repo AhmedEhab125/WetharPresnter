@@ -173,7 +173,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
             getAndSetWeatherDataFromGPS()
 
         } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
-            if (Constants.mapFlag) {
+            if (Constants.mapFlag==true) {
                 dialog.show()
                 Constants.mapFlag = false
 

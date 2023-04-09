@@ -4,6 +4,7 @@ import android.R
 import android.app.Dialog
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Window
@@ -13,6 +14,7 @@ import androidx.constraintlayout.widget.Constraints
 import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.View.MainActivity.MainActivity
 import com.example.wetharpresnter.databinding.ActivitySplashScreenBinding
+import java.util.*
 
 class SplashScreen : AppCompatActivity() {
     lateinit var binding: ActivitySplashScreenBinding
@@ -54,6 +56,7 @@ class SplashScreen : AppCompatActivity() {
             onRadioButtonClickedLang(lang)
             dialog.dismiss()
 
+
         }
     }
 
@@ -62,6 +65,7 @@ class SplashScreen : AppCompatActivity() {
         configrations.edit()?.putString(Constants.UNITS, Constants.DEFAULT)?.apply()
         if (selected == com.example.wetharpresnter.R.id.rb_english) {
             configrations.edit()?.putString(Constants.LANG, Constants.ENGLISH)?.apply()
+
 
         } else if (selected == com.example.wetharpresnter.R.id.rb_arabic) {
             configrations.edit()?.putString(Constants.LANG, Constants.ARABIC)?.apply()
@@ -75,6 +79,25 @@ class SplashScreen : AppCompatActivity() {
         } else if (selected == com.example.wetharpresnter.R.id.rb_chosse_location_from_map) {
             configrations.edit()?.putString(Constants.LOCATION, Constants.MAP)?.apply()
         }
+
+
+    }
+    private fun setLocale(lang: String?) {
+        var locale = Locale(lang)
+        Locale.setDefault(locale)
+        var config = Configuration()
+        config.setLocale(locale)
+     resources.updateConfiguration(config,this.resources?.displayMetrics)
+        /*
+        parentFragmentManager.beginTransaction().detach(SettingFragment@this).commitNowAllowingStateLoss()
+        parentFragmentManager.beginTransaction().attach(SettingFragment@this).commitNowAllowingStateLoss()
+
+        parentFragmentManager.beginTransaction().detach(HomeFragment@this).commitNowAllowingStateLoss()
+        parentFragmentManager.beginTransaction().attach(HomeFragment@this).commitNowAllowingStateLoss()
+    */
+        startActivity(Intent(this,MainActivity::class.java))
+        finish()
+        // activity?.recreate()
 
 
     }

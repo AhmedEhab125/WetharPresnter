@@ -12,6 +12,7 @@ import androidx.lifecycle.*
 import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.Models.AlertDBModel
 import com.example.wetharpresnter.Netwoek.ApiState
+import com.example.wetharpresnter.Repo.IRepo
 import com.example.wetharpresnter.Repo.Repository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class AlertViewModel(var context: Context) : ViewModel() {
+class AlertViewModel(var context: Context,var iRepo: IRepo) : ViewModel() {
     private var list: MutableStateFlow<ApiState> = MutableStateFlow(ApiState.Loading)
     var accessList: StateFlow<ApiState> = list
     private var alertList = MutableLiveData<List<AlertDBModel>>()
@@ -39,7 +40,7 @@ class AlertViewModel(var context: Context) : ViewModel() {
     ) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
 
-            Repository.getWetharData(lat, lon, lang, unit).catch { e ->
+            iRepo.getWetharData(lat, lon, lang, unit).catch { e ->
                 list.value = ApiState.Failure(e)
             }.collect { data ->
                 list.value = ApiState.Success(data)
@@ -61,7 +62,7 @@ class AlertViewModel(var context: Context) : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
 
-            Repository.insertAlert(
+            iRepo.insertAlert(
                 context,
                 AlertDBModel(
                     id,
@@ -74,7 +75,7 @@ class AlertViewModel(var context: Context) : ViewModel() {
                     state
                 )
             )
-            Repository.getAlerts(context).collect {
+            iRepo.getAlerts(context).collect {
                 alertList.postValue(it)
             }
         }
@@ -85,7 +86,7 @@ class AlertViewModel(var context: Context) : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             Log.i("done", "getFavLocations: ")
-            Repository.getAlerts(context).collect {
+            iRepo.getAlerts(context).collect {
                 alertList.postValue(it)
             }
         }
@@ -105,7 +106,7 @@ class AlertViewModel(var context: Context) : ViewModel() {
 
     fun deleteAlert(alertDBModel: AlertDBModel) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            Repository.deleteAlert(context, alertDBModel)
+            iRepo.deleteAlert(context, alertDBModel)
             cancleAlarm(alertDBModel.ID, alertDBModel)
         }
     }

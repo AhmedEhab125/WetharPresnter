@@ -27,6 +27,7 @@ import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.ApiState
 import com.example.wetharpresnter.R
+import com.example.wetharpresnter.Repo.Repository
 import com.example.wetharpresnter.View.MainActivity.MainActivity
 import kotlinx.coroutines.*
 import java.nio.charset.StandardCharsets
@@ -46,7 +47,7 @@ class AlarmRecever() : BroadcastReceiver() {
         CoroutineScope(Dispatchers.Main).launch {
             if (state != null) {
                 if (context != null) {
-                    var data =getData(id.toString(),state,context, lat?.toDouble() ?: 0.0, lon?.toDouble() ?: 0.0,AlertViewModel(context))
+                    var data =getData(id.toString(),state,context, lat?.toDouble() ?: 0.0, lon?.toDouble() ?: 0.0,AlertViewModel(context,Repository))
 
 
                 }
