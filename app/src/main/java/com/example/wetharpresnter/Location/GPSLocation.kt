@@ -10,6 +10,7 @@ import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
+import android.os.RemoteException
 import android.provider.Settings
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -18,6 +19,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import java.io.IOException
 
 
 class GPSLocation (var context: Context) {
@@ -94,9 +96,15 @@ class GPSLocation (var context: Context) {
             val mylastLocaction: Location = p0!!.lastLocation
 
             mutable.postValue(Pair(mylastLocaction.longitude.toString(),mylastLocaction.latitude.toString()))
-            var geocoder = Geocoder(context)
-            var list : List<Address> = geocoder.getFromLocation(mylastLocaction.latitude,mylastLocaction.longitude,1) as List<Address>
-        stopSearch()
+            try {
+                var geocoder = Geocoder(context)
+                var list : List<Address> = geocoder.getFromLocation(mylastLocaction.latitude,mylastLocaction.longitude,1) as List<Address>
+
+            }  catch (e: IOException) {
+        } catch (e: RemoteException) {
+
+        }
+              stopSearch()
         }
 
     }

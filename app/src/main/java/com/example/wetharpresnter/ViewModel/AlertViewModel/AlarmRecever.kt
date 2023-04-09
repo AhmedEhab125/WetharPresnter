@@ -1,4 +1,4 @@
-package com.example.wetharpresnter.View.Alert
+package com.example.wetharpresnter.ViewModel.AlertViewModel
 
 import android.Manifest
 import android.app.Activity
@@ -11,7 +11,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.PixelFormat
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.view.Gravity
@@ -19,12 +18,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.TextView
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.wetharpresnter.Constants
+import com.example.wetharpresnter.Models.WeatherData
+import com.example.wetharpresnter.Netwoek.ApiState
 import com.example.wetharpresnter.R
+import com.example.wetharpresnter.Repo.Repository
 import com.example.wetharpresnter.View.MainActivity.MainActivity
 import kotlinx.coroutines.*
 import java.nio.charset.StandardCharsets
@@ -33,11 +36,22 @@ import java.security.MessageDigest
 
 class AlarmRecever() : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-      var id =  intent?.getIntExtra("id",-1)
+        var id = intent?.getIntExtra("id", -1);
+        var lat = intent?.getDoubleExtra("lat", 0.0);
+        var lon = intent?.getDoubleExtra("lon", 0.0);
+        var state = intent?.getStringExtra("state");
+        println("d5aaaaaaaaaaaal"+ state)
+
 
 
         CoroutineScope(Dispatchers.Main).launch {
-            generateNotification(context!!,id.toString())
+            if (state != null) {
+                if (context != null) {
+                    var data =getData(id.toString(),state,context, lat?.toDouble() ?: 0.0, lon?.toDouble() ?: 0.0,AlertViewModel(context,Repository))
+
+
+                }
+            }
         }
 
 
@@ -51,15 +65,21 @@ class AlarmRecever() : BroadcastReceiver() {
         return truncatedHash.fold(0) { acc, byte -> (acc shl 8) + (byte.toInt() and 0xff) }
     }
 
-    fun generateNotification(context: Context,id :String) {
+    fun generateNotification(context: Context, id: String, weatherData: WeatherData) {
+        var alertData=context.getString(R.string.alert_msg)
+        if (weatherData.alerts.size>0){
+            alertData=""
+            for (i in weatherData.alerts){
+                alertData+=i.description +"\n"
+            }
+        }
 
-        var builder = NotificationCompat.Builder(context!!,id)
+        var builder = NotificationCompat.Builder(context!!, id)
             .setSmallIcon(R.drawable.sunny)
-            .setContentTitle("Wethear2Day")
             .setContentText("notificationContent")
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText("Much longer text that cannot fit one line...")
+                    .bigText(alertData)
             ).apply {
                 val resultIntent = Intent(context, MainActivity::class.java)
                 val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(context).run {
@@ -86,7 +106,14 @@ class AlarmRecever() : BroadcastReceiver() {
     }
 
 
-    private suspend fun alarm(context: Context) {
+    private suspend fun alarm(context: Context,weatherData: WeatherData) {
+        var alertData=context.getString(R.string.alert_msg)
+        if (weatherData.alerts.size>0){
+            alertData=""
+            for (i in weatherData.alerts){
+                alertData+=i.description +"\n"
+            }
+        }
 
         var LAYOUT_FLAG = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -100,8 +127,9 @@ class AlarmRecever() : BroadcastReceiver() {
         view.findViewById<Button>(R.id.btn_close_alarm).setOnClickListener {
             mediaPlayer.release()
         }
-        /* val dismissBtn = view.findViewById(R.id.btnDismissAlarm) as Button
-         val textView = view.findViewById(R.id.descriptionAlarm) as TextView*/
+        view.findViewById<TextView>(R.id.tv_alarm_discription).text=alertData
+         val dismissBtn = view.findViewById(R.id.btn_close_alarm) as Button
+       //  val textView = view.findViewById(R.id.descriptionAlarm) as TextView
         val layoutParams =
             WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -122,11 +150,41 @@ class AlarmRecever() : BroadcastReceiver() {
 
         mediaPlayer.start()
         mediaPlayer.isLooping = true
-        /* dismissBtn.setOnClickListener {
+         dismissBtn.setOnClickListener {
              mediaPlayer?.release()
              windowManager.removeView(view)
          }
-         repository.deleteAlert(entityAlert)*/
+
+    }
+
+    suspend fun getData(id:String,state:String,
+        context: Context,
+        lat: Double,
+        lon: Double,
+        alertViewModel: AlertViewModel
+    ): WeatherData {
+        val lang = context.getSharedPreferences("Configuration", Context.MODE_PRIVATE)
+            .getString(Constants.LANG, "")
+        alertViewModel.getWeatherDataFromApi(lat.toString(), lon.toString(), lang!!)
+        var data = WeatherData()
+        alertViewModel.accessList.collect() { result ->
+            when (result) {
+                is ApiState.Success -> {
+                    data = result.date!!
+                    if (state.equals(Constants.NOTIFICATIONS)) {
+                         generateNotification(context!!, id.toString(),data)
+                    } else {
+                        alarm(context!!,data)
+                    }
+                 //   generateNotification(context!!, id.toString(),data)
+                }
+                else -> {
+
+                }
+            }
+
+        }
+        return data
     }
 
 

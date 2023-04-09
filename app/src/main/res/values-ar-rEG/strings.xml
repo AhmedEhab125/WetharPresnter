@@ -27,4 +27,9 @@
     <string name="alarm">منبه</string>
     <string name="notification_type">نوع التنبيه</string>
     <string name="aler_cofirmation">"هال تريد حفظ  التنبيه   ؟ "</string>
+    <string name="From">من</string>
+    <string name="To">الي</string>
+    <string name="time_drom">وقت البداية</string>
+    <string name="end_date">وقت النهاية</string>
+    <string name="alert_msg">الطقس لطيف</string>
 </resources>

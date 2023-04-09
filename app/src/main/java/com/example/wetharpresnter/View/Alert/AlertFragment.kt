@@ -1,12 +1,7 @@
 package com.example.wetharpresnter.View.Alert
 
 import android.Manifest
-import android.app.AlarmManager
-import android.app.DatePickerDialog
-import android.app.Dialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
@@ -16,25 +11,24 @@ import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.RemoteException
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.RadioButton
-import android.widget.SearchView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.constraintlayout.widget.Constraints
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.wetharpresnter.Constants
-import com.example.wetharpresnter.NetworkListener
+import com.example.wetharpresnter.Models.AlertDBModel
+import com.example.wetharpresnter.Netwoek.NetworkListener
 import com.example.wetharpresnter.R
+import com.example.wetharpresnter.ViewModel.AlertViewModel.AlarmRecever
 import com.example.wetharpresnter.ViewModel.AlertViewModel.AlertViewModel
 import com.example.wetharpresnter.ViewModel.AlertViewModel.AlertViewModelFactory
 import com.example.wetharpresnter.databinding.FragmentAlertBinding
@@ -47,12 +41,12 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_12H
+import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.collections.ArrayList
 
 /**
  * A simple [Fragment] subclass.
@@ -76,12 +70,14 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
     lateinit var viewModelFactory: AlertViewModelFactory
     lateinit var viewModelProvider: AlertViewModel
     var time = 1L
-    var startMonth=""
-    var startDay=""
-    var endMonth=""
-    var endDay=""
-    var notificationId :Int= -1
+    var startMonth = ""
+    var startDay = ""
+    var endMonth = ""
+    var endDay = ""
+    var notificationId: Int = -1
 
+    var calnderFlag = true
+    var state =""
 
 
     override fun onCreateView(
@@ -107,10 +103,16 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
         viewModelFactory = AlertViewModelFactory(requireContext())
         viewModelProvider =
             ViewModelProvider(requireActivity(), viewModelFactory).get(AlertViewModel::class.java)
+        viewModelProvider.getAlerts()
         binding.rvAlert.apply {
-            adapter = AlertAdapter(ArrayList(), viewModelProvider)
+            layoutManager = LinearLayoutManager(requireContext())
+            viewModelProvider.accessAlertList.observe(requireActivity()) {
+                adapter = AlertAdapter(it as ArrayList<AlertDBModel>, viewModelProvider)
+            }
+
         }
         calender = Calendar.getInstance()
+
         locationSearch()
 
 
@@ -123,36 +125,36 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    private fun cancleAlarm() {
-        alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
-        val intent = Intent(activity, AlarmRecever::class.java)
-        pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-        alarmManager.cancel(pendingIntent)
-        Toast.makeText(requireContext(), "Alarm set Sucssesfuly ", Toast.LENGTH_LONG).show()
-
-
-    }
-
     private fun setAlarm() {
-        var interval =(endDay.toInt()-startDay.toInt())+((endMonth.toInt()-startMonth.toInt())*30)
-        var dayMiliSecond=24*60*1000
+        try {
+            var interval =
+                (endDay.toInt() - startDay.toInt()) + ((endMonth.toInt() - startMonth.toInt()) * 30)
+            var dayMiliSecond = 24 * 60 * 1000
 
-        for (i in 0..interval){
-            alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
-            val intent = Intent(activity, AlarmRecever::class.java)
-            intent.putExtra("id",notificationId)
-            println(notificationId)
-            pendingIntent = PendingIntent.getBroadcast(
-                context, notificationId+i //id
-                , intent, 0
-            )
-            alarmManager.setExact(
-                AlarmManager.RTC_WAKEUP, time+(i*dayMiliSecond), pendingIntent
-            )
+            for (i in 0..interval) {
+                alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
+                val intent = Intent(activity, AlarmRecever::class.java)
+                intent.putExtra("id", notificationId)
+                intent.putExtra("lat",lat)
+                intent.putExtra("lon",lon)
+                intent.putExtra("state",state)
+
+                println(notificationId.toString() +"frooooom set alarm ")
+                pendingIntent = PendingIntent.getBroadcast(
+                    context, notificationId + i //id
+                    , intent, 0
+                )
+                alarmManager.setExact(
+                    AlarmManager.RTC_WAKEUP, time + (i * dayMiliSecond), pendingIntent
+                )
+            }
+
+            println(time)
+            Toast.makeText(requireContext(), "Alarm set Sucssesfuly ", Toast.LENGTH_LONG).show()
+
+        } catch (e: NumberFormatException) {
+            Toast.makeText(context, "not valid Time", Toast.LENGTH_LONG).show()
         }
-
-        println(time)
-        Toast.makeText(requireContext(), "Alarm set Sucssesfuly ", Toast.LENGTH_LONG).show()
 
     }
 
@@ -163,6 +165,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
             calender.set(Calendar.MONTH, month)
             calender.set(Calendar.DAY_OF_MONTH, dayOfmonth)
             updateDatelabel(calender)
+
             timePicker = MaterialTimePicker.Builder()
                 .setTimeFormat(CLOCK_12H)
                 .setHour(12)
@@ -177,7 +180,8 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
                 calender[Calendar.SECOND] = 0
                 calender[Calendar.MILLISECOND] = 0
                 createNotificationChanel()
-                time = calender.timeInMillis
+
+
                 //alertDialog.show()
 
             }
@@ -200,6 +204,35 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
         val day = SimpleDateFormat("dd").format(calender.time)
         val month = SimpleDateFormat("MM").format(calender.time)
         val year = SimpleDateFormat("yyyy").format(calender.time)
+        var beginDate = ""
+        var finshDate = ""
+        time = calender.timeInMillis
+        if (calnderFlag) {
+            alertDialog.findViewById<TextView>(R.id.tv_start_date_calnd).text =
+                SimpleDateFormat("dd-M-yyyy").format(time)
+            beginDate = alertDialog.findViewById<TextView>(R.id.tv_start_date_calnd).text.toString()
+
+        } else {
+            alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text =
+                SimpleDateFormat("dd-M-yyyy").format(time)
+            finshDate = alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString()
+        }
+
+        if (finshDate.split("-").size >= 2) {
+            endMonth = finshDate.split("-").get(1)
+            endDay = finshDate.split("-").get(0)
+
+        }
+        if (beginDate.split("-").size >= 3) {
+            startMonth = beginDate.split("-").get(1)
+            startDay = beginDate.split("-").get(0)
+            println("d5aaaaaaaaaaaaaaaaaal")
+
+
+        }
+
+        time = calender.timeInMillis
+
 
         println("$day : $month : $year")
 
@@ -212,8 +245,13 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
             val name = getString(R.string.channel_name)
             val descriptionText = getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            notificationId=generateUniqueIntValue(lat?.toLong() ?: 1L, lon?.toLong() ?: 5L,time.toString(),endMonth)
-            println(notificationId.toString()+ "  from chanel ")
+            notificationId = generateUniqueIntValue(
+                lat?.toLong() ?: 1L,
+                lon?.toLong() ?: 5L,
+                time.toString(),
+                endMonth
+            )
+            println(notificationId.toString() + "  from chanel ")
             val channel = NotificationChannel(notificationId.toString(), name, importance).apply {
                 this.enableLights(true)
                 this.enableVibration(true)
@@ -302,6 +340,10 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
         var startDate = Pair("", 0L)
         var endDate = Pair("", 0L)
 
+        var beginDate = ""
+        var finshDate = ""
+        var milisStart = 1L
+        var millisEnd = 1L
 
 
         alertDialog.setContentView(R.layout.alert_dialog)
@@ -314,29 +356,36 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
         window?.setBackgroundDrawableResource(android.R.color.transparent)
         alertDialog.findViewById<TextView>(R.id.tv_country).text = countryname
         alertDialog.findViewById<ImageView>(R.id.iv_from_date).setOnClickListener {
+            calnderFlag = true
             startDate = showTimePicker()
-            startMonth = startDate.first.split("-").get(1)
-            startDay= startDate.first.split("-").get(0)
+            beginDate = alertDialog.findViewById<TextView>(R.id.tv_start_date_calnd).text.toString()
+            //  alertDialog.findViewById<TextView>(R.id.tv_start_date_calnd).text=startDate.first
+
 
         }
         alertDialog.findViewById<ImageView>(R.id.iv_to_date).setOnClickListener {
+            calnderFlag = false
+            finshDate = alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString()
             endDate = showTimePicker()
-            endMonth = endDate.first.split("-").get(1)
-            endDay= endDate.first.split("-").get(0)
+            //   alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text=endDate.first
+
+
         }
 
         alertDialog.findViewById<Button>(R.id.btn_save_alert).setOnClickListener {
-            println(generateUniqueKey().toString()+"d5aaaaaaaaaaaaaaaaaaaaaaaaaal")
+            val curentTime = System.currentTimeMillis();
+            //  if (endDate.second > startDate.second && curentTime<startDate.second) {
 
             if (alertDialog.findViewById<RadioButton>(R.id.rb_alert_notification).isChecked) {
+                state=Constants.NOTIFICATIONS
                 viewModelProvider.addToAlert(
                     lat.toString(),
                     lon.toString(),
-                   notificationId,
+                    notificationId,
                     startDate.second,
-                    startDate.first,
+                    alertDialog.findViewById<TextView>(R.id.tv_start_date_calnd).text.toString(),
                     endDate.second,
-                    endDate.first,
+                    alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString(),
                     Constants.NOTIFICATIONS
                 )
 
@@ -347,15 +396,16 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
                         Uri.parse("package:" + context?.getPackageName())
                     )
                     requireActivity().startActivityForResult(intent, 0)
-                }else{
+                } else {
+                    state=Constants.ALARM
                     viewModelProvider.addToAlert(
                         lat.toString(),
                         lon.toString(),
-                       notificationId,
+                        notificationId,
                         startDate.second,
-                        startDate.first,
+                        alertDialog.findViewById<TextView>(R.id.tv_start_date_calnd).text.toString(),
                         endDate.second,
-                        endDate.first,
+                        alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString(),
                         Constants.ALARM
                     )
 
@@ -364,13 +414,16 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
 
             }
             setAlarm()
-
             alertDialog.dismiss()
+        } /*else {
+                alertDialog.findViewById<TextView>(R.id.tv_error).visibility=View.VISIBLE
+                alertDialog.findViewById<TextView>(R.id.tv_error).text="Invalid Date Input"
 
-        }
+            }
+
+        }*/
         alertDialog.findViewById<Button>(R.id.btn_cancel_alert).setOnClickListener {
             alertDialog.dismiss()
-
         }
 
 
@@ -462,12 +515,20 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
 
     private fun countryName(lat: Double, lon: Double): String {
         var address = ""
-        var geoCoder: Geocoder = Geocoder(requireContext())
-        var addressList = arrayListOf<Address>()
-        addressList = geoCoder.getFromLocation(lat, lon, 1) as ArrayList<Address>
-        if (addressList.size > 0) {
-            address = addressList.get(0).countryName
+        try {
+            var geoCoder: Geocoder = Geocoder(binding.root.context)
+            var addressList = arrayListOf<Address>()
+            addressList = geoCoder.getFromLocation(lat, lon, 1) as ArrayList<Address>
+            if (addressList.size > 0) {
+                address = addressList.get(0).countryName
+            }
+        } catch (e: IOException) {
+            Toast.makeText(binding.root.context, "cant get Area name", Toast.LENGTH_LONG).show()
+        } catch (e: RemoteException) {
+            Toast.makeText(binding.root.context, "cant get Area name", Toast.LENGTH_LONG).show()
+
         }
+
         return address
     }
 

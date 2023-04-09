@@ -12,13 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.wetharpresnter.Models.WeatherData
-import com.example.wetharpresnter.NetworkListener
+import com.example.wetharpresnter.Netwoek.NetworkListener
 import com.example.wetharpresnter.R
+import com.example.wetharpresnter.Repo.Repository
 import com.example.wetharpresnter.ShowFavLocationData
-import com.example.wetharpresnter.ViewModel.FavouriteViewModel
-import com.example.wetharpresnter.ViewModel.FavouriteViewModelFactory
-import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
-import com.example.wetharpresnter.ViewModel.HomeViewModel.WeatherViewModel
+import com.example.wetharpresnter.ViewModel.FavouriteViewModel.FavouriteViewModel
+import com.example.wetharpresnter.ViewModel.FavouriteViewModel.FavouriteViewModelFactory
 import com.example.wetharpresnter.databinding.FragmentFavouritBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -58,7 +57,7 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModelFactory = FavouriteViewModelFactory(requireContext())
+        viewModelFactory = FavouriteViewModelFactory(requireContext(),Repository)
         viewModelProvider =
             ViewModelProvider(requireActivity(), viewModelFactory).get(FavouriteViewModel::class.java)
         viewModelProvider.getFavLocations()
