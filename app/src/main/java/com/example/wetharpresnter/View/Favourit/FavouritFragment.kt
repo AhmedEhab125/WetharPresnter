@@ -15,7 +15,6 @@ import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.NetworkListener
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.Repo.Repository
-import com.example.wetharpresnter.ShowFavLocationData
 import com.example.wetharpresnter.ViewModel.FavouriteViewModel.FavouriteViewModel
 import com.example.wetharpresnter.ViewModel.FavouriteViewModel.FavouriteViewModelFactory
 import com.example.wetharpresnter.databinding.FragmentFavouritBinding

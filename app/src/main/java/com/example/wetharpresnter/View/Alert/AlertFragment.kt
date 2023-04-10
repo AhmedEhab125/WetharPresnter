@@ -431,13 +431,14 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
                                 alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString(),
                                 Constants.ALARM
                             )
+                            setAlarm()
+                            alertDialog.dismiss()
 
                         }
 
 
                     }
-                    setAlarm()
-                    alertDialog.dismiss()
+
                 } else {
                     alertDialog.findViewById<TextView>(R.id.tv_error).visibility = View.VISIBLE
                     alertDialog.findViewById<TextView>(R.id.tv_error).text = "Invalid Date Input"

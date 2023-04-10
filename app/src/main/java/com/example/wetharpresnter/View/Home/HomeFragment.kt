@@ -180,16 +180,19 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         map.onResume()
-        if (gpsLocation.checkPermission()) {
-            binding.shimmerViewContainer.visibility = View.VISIBLE
 
-            binding.cvPersmission.visibility=View.GONE
+        if (NetworkListener.getConnectivity(requireContext())) {
+
+
+            binding.cvPersmission.visibility = View.GONE
             binding.swiperefresh.isRefreshing = true
             binding.shimmerViewContainer.showShimmer(true)
             binding.shimmerViewContainer.startLayoutAnimation()// If auto-start is set to false
             if (configrations.getString(Constants.LOCATION, "").equals(Constants.GPS)) {
-                getAndSetWeatherDataFromGPS()
-
+                if (gpsLocation.checkPermission()) {
+                    binding.shimmerViewContainer.visibility = View.VISIBLE
+                    getAndSetWeatherDataFromGPS()
+                }
             } else if (configrations.getString(Constants.LOCATION, "").equals(Constants.MAP)) {
                 if (Constants.mapFlag == true) {
                     dialog.show()
@@ -207,8 +210,9 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                         )
                     }
                 }
-            }
 
+
+            }
         }
     }
 

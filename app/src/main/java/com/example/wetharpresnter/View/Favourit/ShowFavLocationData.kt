@@ -1,4 +1,4 @@
-package com.example.wetharpresnter
+package com.example.wetharpresnter.View.Favourit
 
 import com.example.wetharpresnter.Models.WeatherData
 

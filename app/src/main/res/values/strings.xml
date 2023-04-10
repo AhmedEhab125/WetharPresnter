@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Wethear To Day</string>
+    <string name="app_name" translatable="false">Wethear Today</string>
     <string name="location_from">Location From</string>
     <string name="setting">Setting</string>
     <string name="units_of_temperature">Unit of temperature</string>
