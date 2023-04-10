@@ -313,10 +313,15 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
             btnSaveLocation.setOnClickListener {
                 dialog.dismiss()
                 //   showTimePicker()
+                if (NetworkListener.getConnectivity(requireContext())){
                 countryname =
                     getString(R.string.aler_cofirmation) + "\n" + countryName(lat!!, lon!!)
                 alertDialogInit()
                 alertDialog.show()
+                }else{
+                    Toast.makeText(requireContext(),"No network",Toast.LENGTH_LONG).show()
+                }
+
                 // viewModelProvider.addToFav(lat.toString(), lon.toString())
 
 

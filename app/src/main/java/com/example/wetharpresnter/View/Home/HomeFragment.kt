@@ -343,6 +343,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     }
 
     fun getAndSetWeatherDataFromMap(lat: String, lon: String) {
+        if (NetworkListener.getConnectivity(requireContext())){
         var lang = configrations.getString(Constants.LANG, "")
         var unit = configrations.getString(Constants.UNITS, "")
 
@@ -436,6 +437,10 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
 
             }
 
+        }
+        }
+        else{
+            Toast.makeText(requireContext(),"No network",Toast.LENGTH_LONG).show()
         }
 
         handelViewPagerWithRecycleView()

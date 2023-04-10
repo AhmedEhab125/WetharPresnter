@@ -111,7 +111,9 @@ class FavouritFragment : Fragment(), OnMapReadyCallback, ShowFavLocationData {
             lon = lis.longitude
 
             btnSaveLocation.setOnClickListener {
-                viewModelProvider.addToFav(lat.toString(), lon.toString())
+                if (NetworkListener.getConnectivity(requireContext())) {
+                    viewModelProvider.addToFav(lat.toString(), lon.toString())
+                }
                 dialog.dismiss()
 
 
