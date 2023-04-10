@@ -215,7 +215,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
     }
 
     fun getAndSetWeatherDataFromGPS() {
-        if (gpsLocation.checkPermission()) {
+
 
             var lang = configrations.getString(Constants.LANG, "")
             var unit = configrations.getString(Constants.UNITS, "")
@@ -223,6 +223,7 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                 lang = lang ?: Constants.ENGLISH,
                 unit ?: Constants.DEFAULT
             )
+        if (gpsLocation.checkPermission()) {
             lifecycleScope.launch {
                 viewModelProvider.accessList.collect() { result ->
                     when (result) {
