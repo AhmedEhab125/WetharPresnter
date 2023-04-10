@@ -134,6 +134,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
                 (endDay.toInt() - startDay.toInt()) + ((endMonth.toInt() - startMonth.toInt()) * 30)
             var dayMiliSecond = 24 * 60 * 1000
             endDate = alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString()
+            println()
 
             for (i in 0..interval) {
                 alarmManager = activity?.getSystemService(ALARM_SERVICE) as AlarmManager
@@ -318,8 +319,6 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
                     getString(R.string.aler_cofirmation) + "\n" + countryName(lat!!, lon!!)
                 alertDialogInit()
                 alertDialog.show()
-                }else{
-                    Toast.makeText(requireContext(),"No network",Toast.LENGTH_LONG).show()
                 }
 
                 // viewModelProvider.addToFav(lat.toString(), lon.toString())

@@ -276,11 +276,11 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                             binding.tvHumidity.text =
                                 Math.ceil((weatherData?.current?.humidity)?.toDouble() ?: 0.0)
                                     .toInt()
-                                    .toString()
+                                    .toString()+"\n"+activity?.getString(R.string.humdity_unite)
                             binding.tvPressure.text =
                                 Math.ceil((weatherData?.current?.pressure)?.toDouble() ?: 0.0)
                                     .toInt()
-                                    .toString()
+                                    .toString()+"\n"+activity?.getString(R.string.pressure_unite)
                             binding.tvWindSpeed.text = format.second
 
                             binding.rvHoursWeather.apply {
@@ -394,10 +394,10 @@ class HomeFragment(var viewPager: ViewPager2) : Fragment(), OnMapReadyCallback {
                         Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
                         binding.tvHumidity.text =
                             Math.ceil((weatherData?.current?.humidity)?.toDouble() ?: 0.0).toInt()
-                                .toString()
+                                .toString()+"\n"+activity?.getString(R.string.humdity_unite)
                         binding.tvPressure.text =
                             Math.ceil((weatherData?.current?.pressure)?.toDouble() ?: 0.0).toInt()
-                                .toString()
+                                .toString()+"\n"+activity?.getString(R.string.pressure_unite)
                         binding.tvWindSpeed.text = format.second
 
                         binding.rvHoursWeather.apply {

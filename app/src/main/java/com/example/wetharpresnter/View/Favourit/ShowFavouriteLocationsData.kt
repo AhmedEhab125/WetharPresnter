@@ -175,9 +175,9 @@ class ShowFavouriteLocationsData(var weatherData: WeatherData) : Fragment() {
             "https://openweathermap.org/img/wn/${weatherData.current?.weather?.get(0)?.icon}@2x.png"
         Glide.with(requireActivity()).load(uri).into(binding.ivWetharState)
         binding.tvHumidity.text =
-            Math.ceil((weatherData.current?.humidity)?.toDouble() ?: 0.0).toInt().toString()
+            Math.ceil((weatherData.current?.humidity)?.toDouble() ?: 0.0).toInt().toString()+"\n"+activity?.getString(R.string.humdity_unite)
         binding.tvPressure.text =
-            Math.ceil((weatherData.current?.pressure)?.toDouble() ?: 0.0).toInt().toString()
+            Math.ceil((weatherData.current?.pressure)?.toDouble() ?: 0.0).toInt().toString()+"\n"+activity?.getString(R.string.pressure_unite)
         binding.tvWindSpeed.text = format.second
 
         binding.rvHoursWeather.apply {

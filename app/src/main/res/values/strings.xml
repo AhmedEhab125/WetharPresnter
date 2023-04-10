@@ -36,4 +36,6 @@
     <string name="alert_msg">weather is fine</string>
     <string name="allow_gps">Allow gps permission</string>
     <string name="Allow_gps_permission">Allow Permission</string>
+    <string name="pressure_unite">bar</string>
+    <string name="humdity_unite">g.kg-1</string>
 </resources>

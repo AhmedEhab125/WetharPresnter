@@ -34,4 +34,6 @@
     <string name="alert_msg">الطقس لطيف</string>
     <string name="allow_gps">السماح باستخدام ال GPS</string>
     <string name="Allow_gps_permission">السماح</string>
+    <string name="pressure_unite">بار</string>
+    <string name="humdity_unite">g.kg-1</string>
 </resources>
