@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.wetharpresnter.Constants
+import com.example.wetharpresnter.Utils.Constants
 import com.example.wetharpresnter.Models.Hourly
 import com.example.wetharpresnter.databinding.WeatherByHourIteamBinding
 import java.text.SimpleDateFormat

@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.wetharpresnter.Constants
+import com.example.wetharpresnter.Utils.Constants
 import com.example.wetharpresnter.Netwoek.NetworkListener
 import com.example.wetharpresnter.View.MainActivity.MainActivity
 import com.example.wetharpresnter.databinding.FragmentSettingBinding

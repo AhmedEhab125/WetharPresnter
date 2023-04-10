@@ -2,16 +2,14 @@ package com.example.wetharpresnter.View.Alert
 
 import android.Manifest
 import android.app.*
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.example.wetharpresnter.Constants
+import com.example.wetharpresnter.Utils.Constants
 import com.example.wetharpresnter.R
 import com.example.wetharpresnter.View.MainActivity.MainActivity
 

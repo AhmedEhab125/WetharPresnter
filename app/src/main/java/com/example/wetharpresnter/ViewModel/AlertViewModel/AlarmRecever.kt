@@ -21,8 +21,7 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.example.wetharpresnter.Constants
-import com.example.wetharpresnter.Models.AlertDBModel
+import com.example.wetharpresnter.Utils.Constants
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.ApiState
 import com.example.wetharpresnter.R

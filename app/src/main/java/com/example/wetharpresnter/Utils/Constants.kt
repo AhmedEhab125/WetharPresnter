@@ -1,4 +1,4 @@
-package com.example.wetharpresnter
+package com.example.wetharpresnter.Utils
 
 class Constants
 {

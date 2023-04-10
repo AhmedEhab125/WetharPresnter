@@ -24,7 +24,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.wetharpresnter.Constants
+import com.example.wetharpresnter.Utils.Constants
 import com.example.wetharpresnter.Models.AlertDBModel
 import com.example.wetharpresnter.Netwoek.NetworkListener
 import com.example.wetharpresnter.R
@@ -401,6 +401,9 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
 
                     if (alertDialog.findViewById<RadioButton>(R.id.rb_alert_notification).isChecked) {
                         state = Constants.NOTIFICATIONS
+                        println("d5allllllllllllllllllllllllllllll")
+                        setAlarm()
+                        alertDialog.dismiss()
                         viewModelProvider.addToAlert(
                             lat.toString(),
                             lon.toString(),
@@ -411,6 +414,7 @@ class AlertFragment : Fragment(), OnMapReadyCallback {
                             alertDialog.findViewById<TextView>(R.id.tv_end_date_caln).text.toString(),
                             Constants.NOTIFICATIONS
                         )
+
 
                     } else {
                         if (!Settings.canDrawOverlays(context)) {

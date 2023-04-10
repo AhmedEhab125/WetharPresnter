@@ -10,11 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.example.wetharpresnter.Constants
+import com.example.wetharpresnter.Utils.Constants
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.ApiState
 import com.example.wetharpresnter.Netwoek.NetworkListener
@@ -22,7 +21,6 @@ import com.example.wetharpresnter.R
 import com.example.wetharpresnter.Repo.Repository
 import com.example.wetharpresnter.View.Home.DaysWeatherDataAdapter
 import com.example.wetharpresnter.View.Home.HoursWeatherDataAdapter
-import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
 import com.example.wetharpresnter.ViewModel.HomeViewModel.HomeViewModel
 import com.example.wetharpresnter.databinding.FragmentShowFavouritLocationsDataBinding
 import com.google.android.material.snackbar.Snackbar

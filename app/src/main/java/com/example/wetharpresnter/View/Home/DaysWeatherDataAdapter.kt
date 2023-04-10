@@ -1,16 +1,14 @@
 package com.example.wetharpresnter.View.Home
 
 import android.content.SharedPreferences
-import android.content.res.Resources
 import android.icu.text.SimpleDateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.wetharpresnter.Constants
+import com.example.wetharpresnter.Utils.Constants
 import com.example.wetharpresnter.Models.Daily
-import com.example.wetharpresnter.R
 import com.example.wetharpresnter.databinding.WeatherByDayIteamBinding
 import java.util.*
 

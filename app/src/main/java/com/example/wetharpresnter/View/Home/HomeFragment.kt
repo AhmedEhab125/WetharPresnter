@@ -10,11 +10,9 @@ import android.location.Geocoder
 import android.os.Bundle
 import android.os.RemoteException
 import android.provider.Settings
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.Constraints
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -29,7 +27,7 @@ import com.example.wetharpresnter.Location.GPSLocation
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.ApiState
 import com.example.wetharpresnter.Netwoek.NetworkListener
-import com.example.wetharpresnter.View.MainActivity.MainActivity
+import com.example.wetharpresnter.Utils.Constants
 import com.example.wetharpresnter.ViewModel.HomeViewModel.ViewModelFactory
 import com.example.wetharpresnter.ViewModel.HomeViewModel.HomeViewModel
 import com.example.wetharpresnter.databinding.FragmentHomeBinding

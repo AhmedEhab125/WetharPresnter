@@ -11,7 +11,7 @@ import android.view.Window
 import android.widget.Button
 import android.widget.RadioGroup
 import androidx.constraintlayout.widget.Constraints
-import com.example.wetharpresnter.Constants
+import com.example.wetharpresnter.Utils.Constants
 import com.example.wetharpresnter.View.MainActivity.MainActivity
 import com.example.wetharpresnter.databinding.ActivitySplashScreenBinding
 import java.util.*

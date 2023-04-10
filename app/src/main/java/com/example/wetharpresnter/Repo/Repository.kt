@@ -1,7 +1,6 @@
 package com.example.wetharpresnter.Repo
 
 import android.content.Context
-import com.example.wetharpresnter.Constants
 import com.example.wetharpresnter.DataBase.DataBase
 import com.example.wetharpresnter.Models.AlertDBModel
 import com.example.wetharpresnter.Models.WeatherData
