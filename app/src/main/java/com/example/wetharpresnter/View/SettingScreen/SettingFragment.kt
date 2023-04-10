@@ -10,8 +10,10 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.wetharpresnter.Constants
+import com.example.wetharpresnter.Netwoek.NetworkListener
 import com.example.wetharpresnter.View.MainActivity.MainActivity
 import com.example.wetharpresnter.databinding.FragmentSettingBinding
+import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
 
@@ -33,10 +35,17 @@ class SettingFragment : Fragment() {
             AppCompatActivity.MODE_PRIVATE
         )!!
 
+
         chosenSetting()
         selectlang()
         selectLocation()
         selectUnit()
+    if (!NetworkListener.getConnectivity(requireContext())){
+        binding.rbCelsius.isClickable=false
+        binding.rbKelvin.isClickable=false
+        binding.rbFahrenheit.isClickable=false
+        Snackbar.make(binding.scrol,"No Network",Snackbar.LENGTH_LONG).show()
+    }
 
         return binding.root
 
@@ -119,5 +128,17 @@ class SettingFragment : Fragment() {
 
         }
 
-
+    override fun onResume() {
+        super.onResume()
+        if (!NetworkListener.getConnectivity(requireContext())){
+            binding.rbCelsius.isClickable=false
+            binding.rbKelvin.isClickable=false
+            binding.rbFahrenheit.isClickable=false
+            Snackbar.make(binding.constran,"No Network",Snackbar.LENGTH_LONG).show()
+        }else{
+            binding.rbCelsius.isClickable=true
+            binding.rbKelvin.isClickable=true
+            binding.rbFahrenheit.isClickable=true
+        }
+    }
 }

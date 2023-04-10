@@ -32,5 +32,9 @@ class Repository {
         override suspend fun deleteAlert(context: Context, alertDBModel: AlertDBModel){
             DataBase.LocationDataBase.getInstance(context).locations().deleteaAlert(alertDBModel)
         }
+
+        override suspend fun deleteAlertById(context: Context, id: Int) {
+            DataBase.LocationDataBase.getInstance(context).locations().deleteAlertByID(id)
+        }
     }
 }

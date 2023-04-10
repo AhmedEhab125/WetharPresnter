@@ -1,7 +1,6 @@
 package com.example.wetharpresnter.ViewModel.AlertViewModel
 
 import android.Manifest
-import android.app.Activity
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.BroadcastReceiver
@@ -22,8 +21,8 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.lifecycle.ViewModelProvider
 import com.example.wetharpresnter.Constants
+import com.example.wetharpresnter.Models.AlertDBModel
 import com.example.wetharpresnter.Models.WeatherData
 import com.example.wetharpresnter.Netwoek.ApiState
 import com.example.wetharpresnter.R
@@ -32,6 +31,7 @@ import com.example.wetharpresnter.View.MainActivity.MainActivity
 import kotlinx.coroutines.*
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
+import java.text.SimpleDateFormat
 
 
 class AlarmRecever() : BroadcastReceiver() {
@@ -40,6 +40,7 @@ class AlarmRecever() : BroadcastReceiver() {
         var lat = intent?.getDoubleExtra("lat", 0.0);
         var lon = intent?.getDoubleExtra("lon", 0.0);
         var state = intent?.getStringExtra("state");
+        var endDate=intent?.getStringExtra("endDate")
         println("d5aaaaaaaaaaaal"+ state)
 
 
@@ -47,7 +48,7 @@ class AlarmRecever() : BroadcastReceiver() {
         CoroutineScope(Dispatchers.Main).launch {
             if (state != null) {
                 if (context != null) {
-                    var data =getData(id.toString(),state,context, lat?.toDouble() ?: 0.0, lon?.toDouble() ?: 0.0,AlertViewModel(context,Repository))
+                    var data =getData(id.toString(),state,context, lat?.toDouble() ?: 0.0, lon?.toDouble() ?: 0.0,AlertViewModel(context,Repository),endDate)
 
 
                 }
@@ -157,11 +158,13 @@ class AlarmRecever() : BroadcastReceiver() {
 
     }
 
-    suspend fun getData(id:String,state:String,
+    suspend fun getData(
+        id: String, state: String,
         context: Context,
         lat: Double,
         lon: Double,
-        alertViewModel: AlertViewModel
+        alertViewModel: AlertViewModel,
+        endDate: String?
     ): WeatherData {
         val lang = context.getSharedPreferences("Configuration", Context.MODE_PRIVATE)
             .getString(Constants.LANG, "")
@@ -170,11 +173,17 @@ class AlarmRecever() : BroadcastReceiver() {
         alertViewModel.accessList.collect() { result ->
             when (result) {
                 is ApiState.Success -> {
+                    val curentTime = System.currentTimeMillis();
                     data = result.date!!
                     if (state.equals(Constants.NOTIFICATIONS)) {
-                         generateNotification(context!!, id.toString(),data)
+                         generateNotification(context!!, id,data)
+
                     } else {
                         alarm(context!!,data)
+                    }
+                    if ( SimpleDateFormat("dd-M-yyyy").format(curentTime).equals(endDate)){
+                        println(id+" froom recevr")
+                        alertViewModel.deleteAlertByID(id.toInt())
                     }
                  //   generateNotification(context!!, id.toString(),data)
                 }

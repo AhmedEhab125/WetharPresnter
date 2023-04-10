@@ -25,6 +25,7 @@ class SplashScreen : AppCompatActivity() {
         binding = ActivitySplashScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
         configrations = getSharedPreferences("Configuration", MODE_PRIVATE)!!
+
         binding.lottieSplash.animate().translationX(1400f).setStartDelay(5700)
             .withEndAction {
                 dialogSettingView()
@@ -43,21 +44,29 @@ class SplashScreen : AppCompatActivity() {
         )
         window?.setBackgroundDrawableResource(R.color.transparent)
         dialog.setCanceledOnTouchOutside(false)
-        dialog.show()
+        if (!configrations.contains("first time")) {
+            dialog.show()
+            dialog.findViewById<Button>(com.example.wetharpresnter.R.id.btn_save).setOnClickListener {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+                var location =
+                    dialog.findViewById<RadioGroup>(com.example.wetharpresnter.R.id.rg_location)
+                onRadioButtonClickedLocation(location)
+                var lang = dialog.findViewById<RadioGroup>(com.example.wetharpresnter.R.id.rg_lang)
+                onRadioButtonClickedLang(lang)
+                dialog.dismiss()
+                configrations.edit().putString("first time","true").apply()
 
 
-        dialog.findViewById<Button>(com.example.wetharpresnter.R.id.btn_save).setOnClickListener {
+            }
+        }else
+        {
+
             startActivity(Intent(this, MainActivity::class.java))
             finish()
-            var location =
-                dialog.findViewById<RadioGroup>(com.example.wetharpresnter.R.id.rg_location)
-            onRadioButtonClickedLocation(location)
-            var lang = dialog.findViewById<RadioGroup>(com.example.wetharpresnter.R.id.rg_lang)
-            onRadioButtonClickedLang(lang)
-            dialog.dismiss()
-
-
         }
+
+
     }
 
     fun onRadioButtonClickedLang(radioGroup: RadioGroup) {

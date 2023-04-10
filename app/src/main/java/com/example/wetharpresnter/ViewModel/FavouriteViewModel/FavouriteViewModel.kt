@@ -112,9 +112,9 @@ class FavouriteViewModel (var context: Context,var iRepo: IRepo) : ViewModel() {
                     context.getSharedPreferences("Configuration", Context.MODE_PRIVATE)!!
 
                 iRepo.getFavouriteLocations(context).collect {
-                    for (data in it) {
-                        var lat = data.lat
-                        var lon = data.lon
+                    for (i in 0.. it.size) {
+                        var lat = it.get(i).lat
+                        var lon =  it.get(i).lon
                         configrations.getString(Constants.LANG, "")?.let { it1 ->
                             addToFav(
                                 lat.toString(), lon.toString(),

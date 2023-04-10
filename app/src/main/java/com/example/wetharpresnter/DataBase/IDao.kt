@@ -19,6 +19,8 @@ interface IDao {
     suspend fun insertAlert(alertDBModel: AlertDBModel) :Long
     @Delete
     suspend fun deleteaAlert(alertDBModel: AlertDBModel)
+    @Query("DELETE FROM Alerts WHERE ID = :id")
+    suspend fun deleteAlertByID(id: Int)
 
 
 }
